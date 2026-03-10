@@ -2,19 +2,20 @@ const knexConfig = require('../../knexfile');
 const db = require('knex')(knexConfig.development || knexConfig);
 
 exports.getTotalRevenue = async () => {
+    // Tính tổng tiền từ các đơn đã thanh toán (Paid hoặc Completed)
     const result = await db('Bookings')
-    .sum('total price as total revenue')
-    .whereIn('status',['Paid','Completed']);
-return result[0].total_revenue || 0;
+        .whereIn('status', ['Paid', 'Completed', 'completed'])
+        .sum('total_price as total')
+        .first();
+    return result.total || 0;
 };
-exports. getTopCourts = async () => {
-     const topCourts = await db('Bookings')
-     .join('Courts','Bookings.court_id', '=', 'Courts_id')
-     .select('Courts.name as court_name', 'Bookings.court_id')
-     .sum('Bookings.total_price as court_revenue')
-     .whereIn('Bookings.status',['Paid','Completed'])
-     .groupBy('Courts.name', 'Bookings.court_id')
-     .orderBy('total_bookings', 'desc')
-     .limit(3);
-    return topCourts;
+
+exports.getTopCourts = async () => {
+    return await db('Bookings')
+        .join('Courts', 'Bookings.court_id', 'Courts.id')
+        .select('Courts.name')
+        .count('Bookings.id as booking_count')
+        .groupBy('Courts.name')
+        .orderBy('booking_count', 'desc')
+        .limit(5);
 };
