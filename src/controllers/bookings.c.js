@@ -81,14 +81,9 @@ const checkAvailability = async (req, res) => {
 // 4. Hủy sân: Có lưu Log kiểm toán
 const cancelBooking = async (req, res) => {
   try {
-    // ĐÃ SỬA: Lấy dữ liệu chuẩn xác
     const { booking_id } = req.params; 
     const { user_id, username } = req.user; 
-
-    // BƯỚC 1: Tiến hành gọi DB để hủy sân và hoàn tiền (Nếu có)
     const result = await bookingService.cancelBooking(booking_id, user_id);
-
-    // BƯỚC 2: Chỉ ghi Log khi đã thao tác DB thành công
     logger.info({
       message: 'Hành động hủy sân được thực hiện',
       action: 'DELETE_BOOKING',
@@ -98,7 +93,6 @@ const cancelBooking = async (req, res) => {
       time: new Date().toISOString()
     });
 
-    // BƯỚC 3: Trả kết quả về cho Postman (Nằm ở cuối cùng)
     return res.status(200).json({ 
       success: true, 
       message: 'Hủy lịch đặt sân thành công!' 
