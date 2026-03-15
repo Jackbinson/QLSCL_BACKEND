@@ -12,7 +12,7 @@ app.use(cors());
 app.use(express.json()); 
 app.use(express.urlencoded({ extended: true }));
 startBookingCronJob();
-// Gắn route
+// Gắn routex
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/wallet', walletRoutes);

@@ -26,7 +26,6 @@ exports.up = async function(knex) {
     table.increments('id').primary();
     table.string('name').notNullable();
     table.enum('type', ['Double', 'Vip', 'Single']).defaultTo('Double');
-    // Sửa chữ l thường thành L hoa
     table.integer('location_id').unsigned().references('id').inTable('Locations').onDelete('CASCADE'); 
     table.decimal('price_per_hour', 12, 2).notNullable();
     table.enum('status', ['Active', 'Maintenance']).defaultTo('Active');

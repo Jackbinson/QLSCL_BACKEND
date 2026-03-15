@@ -34,7 +34,6 @@ exports.seed = async function(knex) {
     { id: 4, name: 'Sân Đơn Q7', type: 'Single', location_id: 2, price_per_hour: 60000, status: 'Maintenance' }
   ]);
 
-  // --- PHẦN QUAN TRỌNG NHẤT: RESET BỘ ĐẾM ID ---
   // Lệnh này bảo Postgres: "Hãy nhìn vào ID lớn nhất và đếm tiếp từ đó"
   await knex.raw(`SELECT setval(pg_get_serial_sequence('"Users"', 'id'), (SELECT MAX(id) FROM "Users"))`);
   await knex.raw(`SELECT setval(pg_get_serial_sequence('"Locations"', 'id'), (SELECT MAX(id) FROM "Locations"))`);
