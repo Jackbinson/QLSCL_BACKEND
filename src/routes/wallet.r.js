@@ -3,12 +3,12 @@ const router = express.Router();
 const walletController = require('../controllers/wallet.c');
 const authMiddleware = require('../middlewares/auth.m');
 
-// Khách hàng gọi API này để lấy link mã QR
-// Cú pháp: GET /api/wallet/qr?amount=50000
+// 1. Khách lấy mã QR
 router.get('/qr', authMiddleware.verifyToken, walletController.generateQR);
 
-// Khách hàng gọi API này để tự cộng tiền vào ví (Giả lập)
-// Cú pháp: POST /api/wallet/topup (Kèm JSON Body)
+// 2. Khách tự nạp tiền giả lập
 router.post('/topup', authMiddleware.verifyToken, walletController.topUp);
+
+router.post('/sepaywebhook', walletController.handleSePayWebhook);
 
 module.exports = router;

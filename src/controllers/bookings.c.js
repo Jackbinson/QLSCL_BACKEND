@@ -99,7 +99,6 @@ const cancelBooking = async (req, res) => {
     });
 
   } catch (error) {
-    // ĐÃ THÊM: Ghi lại log nếu hệ thống bị lỗi hoặc khách cố tình xóa sân của người khác
     logger.error({
         message: `Lỗi khi hủy sân: ${error.message}`,
         action: 'DELETE_BOOKING_ERROR',

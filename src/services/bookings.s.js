@@ -16,11 +16,10 @@ const createBooking = async (data) => {
 
             if (user.wallet_balance < price) {
                 const thieu = price - user.wallet_balance;
-                // ĐÃ SỬA: Dùng dấu huyền ` ` để template string hoạt động
                 throw new Error(`Số dư ví không đủ! Vui lòng nạp thêm ít nhất ${thieu} VND để chốt sân này`);
             }
 
-            // ĐÃ SỬA: 'wallet-balance' -> 'wallet_balance' (gạch dưới mới đúng chuẩn DB)
+            // Trừ tiền trong ví
             await trx('Users').where({ id: user_id }).decrement('wallet_balance', price);
 
             const [newBooking] = await trx('Bookings').insert({
@@ -30,13 +29,13 @@ const createBooking = async (data) => {
                 start_time,
                 end_time,
                 total_price: price,
-                status: 'Paid'
+                status: 'Fully Paid' 
             }).returning('*');
 
             return newBooking;
 
         } catch (error) {
-            if (error.code === '23505') {
+            if (error.code === '23505') { // Lỗi trùng unique constraint
                 throw new Error(`Rất tiếc, sân này đã được đặt vào khung giờ này rồi. ${username} vui lòng chọn khung giờ hoặc sân khác nhé!`);
             }
             throw error;
@@ -60,7 +59,10 @@ const cancelBooking = async (bookingId, userId) => {
         if (!booking) throw new Error('Không tìm thấy lịch đặt hoặc bạn không có quyền hủy!');
         if (booking.status === 'Cancelled') throw new Error('Lịch đặt này đã được hủy trước đó rồi!');
 
+        // Cập nhật trạng thái thành Cancelled (Hợp lệ trong DB)
         await trx('Bookings').where({ id: bookingId, user_id: userId }).update({ status: 'Cancelled' });
+        
+        // Hoàn tiền lại vào ví
         await trx('Users').where({ id: userId }).increment('wallet_balance', booking.total_price);
 
         return { message: `Đã hủy thành công! Hệ thống đã hoàn lại ${booking.total_price} VND vào ví.` };
@@ -76,8 +78,7 @@ const checkAvailability = async (date, time) => {
     return await db('Courts').where({ status: 'Active' }).whereNotIn('id', booked);
 };
 
-// 5. Cập nhật trạng thái tự động (Cron Job)
-// ĐÃ SỬA: Thêm chữ 'd' vào Completed để khớp với Controller
+// 5. Cập nhật trạng thái tự động 
 const updateCompletedBookings = async () => {
     try {
         const now = new Date();
@@ -85,7 +86,7 @@ const updateCompletedBookings = async () => {
         const currentTime = now.toTimeString().split(' ')[0];
 
         const updatedRows = await db('Bookings')
-            .where('status', 'Paid')
+            .where('status', 'Fully Paid') // ✅ Tìm đúng những đơn đã thanh toán
             .andWhere(function() {
                 this.where('booking_date', '<', currentDate)
                     .orWhere(function() {
@@ -93,15 +94,15 @@ const updateCompletedBookings = async () => {
                             .andWhere('end_time', '<', currentTime);
                     });
             })
-            .update({ status: 'completed' });
-            
+
+            .update({ status: 'Active' }); 
+
         return updatedRows;
     } catch (error) {
         throw error;
     }
 };
 
-// CÁCH EXPORT CHUẨN: Gom tất cả vào một object để không bị ghi đè
 module.exports = {
     createBooking,
     getUserBookings,

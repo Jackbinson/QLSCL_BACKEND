@@ -14,4 +14,27 @@ const topUpMock = async (userId, amount) => {
     }
     return updatedUser;
 }
-module.exports = { topUpMock };
+const processSePayWebhook = async (data) => {
+    const { id, transferAmount, transferContent } = data;
+
+    const existingTrans = await Transaction.findOne({ where: { transaction_id: id } });
+    if (existingTrans) {
+        console.log(` [WEBHOOK] Giao dịch ${id} đã được xử lý trước đó. Bỏ qua.`);
+        return;
+    }
+
+    const userId = extractUserId(transferContent); 
+
+    await Transaction.create({
+        transaction_id: id,
+        user_id: userId,
+        amount: transferAmount,
+        content: transferContent,
+        status: 'success'
+    });
+
+    await User.increment({ wallet_balance: transferAmount }, { where: { id: userId } });
+    
+    console.log(`[WEBHOOK] Đã nạp thành công ${transferAmount} cho User ${userId}`);
+};
+module.exports = { topUpMock, processSePayWebhook };
