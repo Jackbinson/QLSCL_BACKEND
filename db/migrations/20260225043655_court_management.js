@@ -47,6 +47,14 @@ exports.up = async function(knex) {
     // Đã bỏ end_time để chặn trùng lịch tại một thời điểm bắt đầu cụ thể
     table.unique(['court_id', 'booking_date', 'start_time']);
   });
+  await knex.schema.createTable('transactions', (table) => {
+    table.increments('id').primary();
+    table.string('gateway_transaction_id').unique().notNullable(); // Mã ID từ SePay
+    table.decimal('amount', 15, 2).notNullable();
+    table.integer('user_id').unsigned().references('id').inTable('users');
+    table.string('content');
+    table.timestamps(true, true);
+  });
 };
 
 exports.down = async function(knex) {
@@ -55,4 +63,5 @@ exports.down = async function(knex) {
   await knex.schema.dropTableIfExists('Courts');
   await knex.schema.dropTableIfExists('Locations');
   await knex.schema.dropTableIfExists('Users');
+  await knex.schema.dropTableIfExists('transactions');
 };

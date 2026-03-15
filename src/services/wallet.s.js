@@ -15,26 +15,32 @@ const topUpMock = async (userId, amount) => {
     return updatedUser;
 }
 const processSePayWebhook = async (data) => {
-    const { id, transferAmount, transferContent } = data;
+    const { id, transferAmount, transferContent, referenceCode } = data;
+    const existingTransaction = await db('transactions')
+        .where({ gateway_transaction_id: id })
+        .first();
 
-    const existingTrans = await Transaction.findOne({ where: { transaction_id: id } });
-    if (existingTrans) {
-        console.log(` [WEBHOOK] Giao dịch ${id} đã được xử lý trước đó. Bỏ qua.`);
-        return;
+    if (existingTransaction) {
+        console.log(`[IDEMPOTENCY] Giao dịch ${id} đã được xử lý. Bỏ qua cộng tiền.`);
+        return { success: true, message: 'Already processed' };
     }
-
     const userId = extractUserId(transferContent); 
+    return await db.transaction(async (trx) => {
+        await trx('transactions').insert({
+            gateway_transaction_id: id,
+            amount: transferAmount,
+            user_id: userId,
+            content: transferContent
+        });
 
-    await Transaction.create({
-        transaction_id: id,
-        user_id: userId,
-        amount: transferAmount,
-        content: transferContent,
-        status: 'success'
+        await trx('users')
+            .where({ id: userId })
+            .increment('wallet_balance', transferAmount);
+
+        console.log(`[SUCCESS] Đã cộng ${transferAmount} cho User ${userId}. ID: ${id}`);
+        return { success: true };
     });
-
-    await User.increment({ wallet_balance: transferAmount }, { where: { id: userId } });
-    
-    console.log(`[WEBHOOK] Đã nạp thành công ${transferAmount} cho User ${userId}`);
 };
+
+
 module.exports = { topUpMock, processSePayWebhook };

@@ -1,10 +1,7 @@
 const walletService = require('../services/wallet.s');
-// Nếu bạn có file logger thì nhớ require vào nhé: const logger = require('../utils/logger');
-
 // 1. Hàm tạo mã QR (Đã nâng cấp dùng chuẩn SePay & Tài khoản VA)
 const generateQR  = async (req, res) => {
     try {
-        // Cẩn thận: Đảm bảo payload JWT của bạn lưu là id hay user_id nhé
         const user_id = req.user.id || req.user.user_id; 
         const { amount } = req.query; 
 
@@ -65,21 +62,24 @@ const topUp = async (req, res) => {
 
 // 3. THÊM MỚI: Hàm "Lễ tân" đón thông báo chuyển khoản thực tế từ SePay
 const handleSePayWebhook = async (req, res) => {
-    console.log("🔔 [WEBHOOK] Nhận tín hiệu từ SePay:", req.body);
+    console.log("[WEBHOOK] Nhận tín hiệu từ SePay:", req.body);
 
     try {
-        // Giao việc bóc tách dữ liệu và cộng tiền cho Service
-        await walletService.processSePayWebhook(req.body);
-
-        // Bắt buộc trả về 200 OK để SePay biết mình đã nhận tin
+        const result = await walletService.processSePayWebhook(req.body);
         return res.status(200).json({ success: true, message: 'Webhook received successfully' });
     } catch (error) {
-        console.error("❌ [WEBHOOK ERROR]:", error.message);
-        // Chỉ trả 500 nếu sập DB, còn sai cú pháp vẫn phải trả 200
+        console.error("[WEBHOOK ERROR]:", error.message);
         return res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 };
-
+const extractUserId = (content) => { 
+    if (!content) return null;
+    const match = content.match(/NAP\s*(\d+)/i);
+    if (match && match[1]) {
+        return parseInt(match[1]);
+    }
+    return null;
+};
 module.exports = {
     generateQR,
     topUp,
