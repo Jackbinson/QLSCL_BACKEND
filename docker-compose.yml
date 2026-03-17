@@ -1,0 +1,49 @@
+services:
+  db:
+    image: postgres:15-alpine 
+    container_name: badminton_db_pg
+    restart: always
+    ports:
+      - "54321:5432" 
+    environment:
+      POSTGRES_DB: badminton_booking_db
+      POSTGRES_USER: badminton_user
+      # Bọc trong nháy kép để đảm bảo Docker hiểu đây là một chuỗi văn bản
+      POSTGRES_PASSWORD: "badminton123" 
+    volumes:
+      - pg_data_v2:/var/lib/postgresql/data
+
+  api:
+    build: . 
+    container_name: badminton_api
+    restart: unless-stopped
+    ports:
+      - "3000:3000" 
+    environment:
+      - DB_HOST=db 
+      - DB_PORT=5432 
+      - DB_USER=badminton_user
+      - DB_PASSWORD=badminton123 
+      - DB_NAME=badminton_booking_db
+      - PORT=3000
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules 
+    depends_on:
+      - db 
+    command: npm run dev 
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: badminton_pgadmin
+    restart: always
+    ports:
+      - "5454:80" # Mình đã đổi sang 5454 để tránh lỗi "Port is already allocated" bạn gặp lúc nãy
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@badminton.com 
+      PGADMIN_DEFAULT_PASSWORD: admin 
+    depends_on:
+      - db
+
+volumes:
+  pg_data_v2:

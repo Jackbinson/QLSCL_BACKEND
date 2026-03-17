@@ -1,0 +1,7 @@
+{"level":"error","message":"❌ [CRON JOB] Lỗi hệ thống khi cập nhật sân: bookingService.updateCompletedBookings is not a function","timestamp":"2026-03-10 18:45:00"}
+{"level":"error","message":"Lỗi api thống kê Admin:', select sum(\"total price\") as \"total revenue\" from \"Bookings\" where \"status\" in ($1, $2) - column \"total price\" does not exist","timestamp":"2026-03-10 18:46:21"}
+{"level":"error","message":"Lỗi api thống kê Admin:', select sum(\"total price\") as \"total revenue\" from \"Bookings\" where \"status\" in ($1, $2) - column \"total price\" does not exist","timestamp":"2026-03-10 18:46:24"}
+{"level":"error","message":"Lỗi api thống kê Admin:', select sum(\"total price\") as \"total revenue\" from \"Bookings\" where \"status\" in ($1, $2) - column \"total price\" does not exist","timestamp":"2026-03-10 18:47:20"}
+{"level":"error","message":"Lỗi api thống kê Admin:', select sum(\"total price\") as \"total revenue\" from \"Bookings\" where \"status\" in ($1, $2) - column \"total price\" does not exist","timestamp":"2026-03-10 18:47:30"}
+{"level":"error","message":"❌ [CRON JOB] Lỗi hệ thống khi cập nhật sân: bookingService.updateCompletedBookings is not a function","timestamp":"2026-03-11 02:00:00"}
+{"level":"error","message":"Lỗi api thống kê Admin: bookingService.updateCompletedBookings is not a function","timestamp":"2026-03-11 02:04:37"}
