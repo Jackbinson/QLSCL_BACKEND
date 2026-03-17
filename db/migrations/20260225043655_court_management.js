@@ -39,7 +39,6 @@ exports.up = async function(knex) {
     table.date('booking_date').notNullable();
     table.time('start_time').notNullable();
     table.time('end_time').notNullable();
-    // Bổ sung các trạng thái thực tế của luồng sân
     table.enum('status',['Pending', 'Partially Paid', 'Fully Paid', 'Active', 'Cancelled']).defaultTo('Pending');
     table.decimal('total_price', 12, 2).notNullable();
     table.timestamps(true, true);

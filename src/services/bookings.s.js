@@ -236,7 +236,7 @@ const payAtCounter = async(bookingId, cashReceived) => {
 };
 // Báo cáo doanh thu 
 const getShiftRevenue = async (startTime, endTime) => {
-    const transactions = await db('transanctions')
+    const transactions = await db('transactions')
     .where('status','success')
     .whereBetween('created_at',[startTime,endTime]);
 let totalCash = 0
@@ -266,6 +266,11 @@ transactions.forEach(tx => {
         details: transactions 
     };
 };
+const getFailedTransactions = async () => {
+    return await db('transactions')
+        .where('status', 'failed') 
+        .orderBy('created_at', 'desc');
+};
 module.exports = {
     createBooking,
     getUserBookings,
@@ -274,5 +279,6 @@ module.exports = {
     updateCompletedBookings,
     checkoutBooking,
     payAtCounter,
-    getShiftRevenue
+    getShiftRevenue,
+    getFailedTransactions
 };

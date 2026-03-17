@@ -22,7 +22,18 @@ const verifyToken = (req, res, next) => {
     return res.status(403).json({ success: false, message: 'Token không hợp lệ hoặc đã hết hạn!' });
   }
 };
-
+const authorizeRoles = (allowedRoles) => {
+    return (req, res, next) => {
+        if (!req.user || !allowedRoles.includes(req.user.role)) {
+            return res.status(403).json({ 
+                success: false, 
+                message: "Bạn không có quyền truy cập tính năng này!" 
+            });
+        }
+        next(); 
+    };
+};
 module.exports = {
-  verifyToken
+  verifyToken,
+  authorizeRoles
 };

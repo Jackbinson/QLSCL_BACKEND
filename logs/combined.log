@@ -309,3 +309,18 @@
 {"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 15:45:00"}
 {"action":"DELETE_BOOKING_ERROR","actor_id":3,"level":"error","message":"Lỗi khi hủy sân: insert into \"transactions\" (\"status\", \"transfer_amount\", \"user_id\") values ($1, $2, $3) - null value in column \"gateway_transaction_id\" of relation \"transactions\" violates not-null constraint","target_booking_id":"19","timestamp":"2026-03-17 15:47:53"}
 {"action":"DELETE_BOOKING","actor_id":3,"actor_name":"khach1","level":"info","message":"Hành động hủy sân được thực hiện","target_booking_id":"19","time":"2026-03-17T15:51:25.127Z","timestamp":"2026-03-17 15:51:25"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 16:30:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 16:30:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 16:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 16:45:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 17:00:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 17:00:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 17:15:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 17:15:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 17:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 17:45:00"}
+{"action":"DELETE_BOOKING_ERROR","actor_id":3,"level":"error","message":"Lỗi khi hủy sân: Đơn này đã được hủy từ trước rồi!","target_booking_id":"19","timestamp":"2026-03-17 17:55:48"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 18:00:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 18:00:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 18:15:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 18:15:00"}
