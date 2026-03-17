@@ -50,14 +50,13 @@ const processSePayWebhook = async (data) => {
 
     // BƯỚC 3: Thực thi Database Transaction để cộng tiền và lưu lịch sử
     return await db.transaction(async (trx) => {
-        // ĐÃ SỬA: Khớp tên cột với DB và dùng đúng biến userId
         await trx('transactions').insert({
             gateway_transaction_id: id,
-            transfer_amount: transferAmount,      // Sửa lại cho khớp DB
-            transfer_content: transferContent,    // Sửa lại cho khớp DB
-            user_id: userId,                      // Fix lỗi ẩn: dùng userId đã bóc tách ở Bước 2
-            gateway: gateway || 'Unknown',        // Lưu thêm ngân hàng
-            reference_code: referenceCode || null // Lưu thêm mã tham chiếu
+            transfer_amount: transferAmount,      
+            transfer_content: transferContent,    
+            user_id: userId,                  
+            gateway: gateway || 'Unknown',        
+            reference_code: referenceCode || null 
         });
 
         // Cộng tiền vào ví 

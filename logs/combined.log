@@ -294,3 +294,18 @@
 {"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 14:15:00"}
 {"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 14:30:00"}
 {"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 14:30:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 14:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 14:45:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 15:00:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 15:00:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 15:15:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 15:15:00"}
+{"level":"info","message":"DELETE /api/bookings/19/cancel - Trạng thái 404 - Thời gian xử lý: 6.832 ms","timestamp":"2026-03-17 15:23:45","type":"HTTP_METRICS"}
+{"action":"DELETE_BOOKING_ERROR","actor_id":3,"level":"error","message":"Lỗi khi hủy sân: insert into \"transactions\" (\"booking_id\", \"status\", \"transfer_amount\", \"user_id\") values ($1, $2, $3, $4) - column \"booking_id\" of relation \"transactions\" does not exist","target_booking_id":"19","timestamp":"2026-03-17 15:24:37"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 15:30:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 15:30:00"}
+{"action":"DELETE_BOOKING_ERROR","actor_id":3,"level":"error","message":"Lỗi khi hủy sân: insert into \"transactions\" (\"status\", \"transfer_amount\", \"user_id\") values ($1, $2, $3) - column \"status\" of relation \"transactions\" does not exist","target_booking_id":"19","timestamp":"2026-03-17 15:32:53"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 15:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 15:45:00"}
+{"action":"DELETE_BOOKING_ERROR","actor_id":3,"level":"error","message":"Lỗi khi hủy sân: insert into \"transactions\" (\"status\", \"transfer_amount\", \"user_id\") values ($1, $2, $3) - null value in column \"gateway_transaction_id\" of relation \"transactions\" violates not-null constraint","target_booking_id":"19","timestamp":"2026-03-17 15:47:53"}
+{"action":"DELETE_BOOKING","actor_id":3,"actor_name":"khach1","level":"info","message":"Hành động hủy sân được thực hiện","target_booking_id":"19","time":"2026-03-17T15:51:25.127Z","timestamp":"2026-03-17 15:51:25"}

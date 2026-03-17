@@ -10,4 +10,5 @@ router.put('/cancel/:booking_id', authMiddleware.verifyToken, bookingController.
 router.delete('/:booking_id', authMiddleware.verifyToken, bookingController.cancelBooking);
 router.post('/:id/checkout', bookingController.checkout);
 router.post('/:id/pay', bookingController.pay);
+router.delete('/:booking_id/cancel', authMiddleware.verifyToken, bookingController.cancelBooking);
 module.exports = router;

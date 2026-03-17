@@ -110,7 +110,8 @@ const cancelBooking = async (req, res) => {
 
     return res.status(200).json({ 
       success: true, 
-      message: 'Hủy lịch đặt sân thành công!' 
+      message: `Hủy lịch đặt sân thành công! ${result.message}`, 
+      data: result
     });
 
   } catch (error) {
