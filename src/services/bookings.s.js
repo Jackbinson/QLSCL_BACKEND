@@ -234,7 +234,38 @@ const payAtCounter = async(bookingId, cashReceived) => {
         bookingDetails: finalBooking
     };
 };
-
+// Báo cáo doanh thu 
+const getShiftRevenue = async (startTime, endTime) => {
+    const transactions = await db('transanctions')
+    .where('status','success')
+    .whereBetween('created_at',[startTime,endTime]);
+let totalCash = 0
+let totalTransfer = 0;
+let totalRefund = 0;
+transactions.forEach(tx => {
+    const amount = Number(tx.transfer_amount || 0);
+    const gatewayId = tx.gateway_transaction_id || '';
+    if (gatewayId.startsWith('CASH_')) {
+        totalCash += amount;
+    } else if (gatewayId.startsWith('REFUND_')) {
+        totalRefund += amount;
+    } else {
+        totalTransfer += amount;
+    }
+});
+    const netRevenue  = totalCash + totalTransfer - totalRefund;
+    return { 
+        shift_duration: `${startTime} đến ${endTime}`,
+        total_transactions: transactions.length,
+        summary: {
+            cash_received: totalCash,
+            online_transfer: totalTransfer,
+            refunded_amount: totalRefund,
+            net_revenue: netRevenue
+        },
+        details: transactions 
+    };
+};
 module.exports = {
     createBooking,
     getUserBookings,
@@ -242,5 +273,6 @@ module.exports = {
     checkAvailability,
     updateCompletedBookings,
     checkoutBooking,
-    payAtCounter
+    payAtCounter,
+    getShiftRevenue
 };

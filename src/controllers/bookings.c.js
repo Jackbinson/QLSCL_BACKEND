@@ -151,6 +151,29 @@ const pay = async (req,res)  => {
     });
   }
 };
+// Báo cáo doanh thu ca làm việc 
+const getShiftReport = async (req,res) => {
+  try {
+    const {start_time,end_time} = req.query;
+    if (!start_time || end_time) {
+      return res.status(400).json({
+        success: false,
+        message: 'Vui lòng cung cấp khoảng thời gian: start_time và end_time'
+      });
+    }
+    const report = await bookingService.getShiftRevenue(start_time, end_time);
+    return res.status(200).json({
+      success: true,
+      message: 'Xuất báo cáo doanh thu thành công!',
+      data: report
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+}
 module.exports = { 
   bookCourt, 
   checkAvailability, 
