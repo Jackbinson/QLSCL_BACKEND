@@ -11,4 +11,5 @@ router.delete('/:booking_id', authMiddleware.verifyToken, bookingController.canc
 router.post('/:id/checkout', bookingController.checkout);
 router.post('/:id/pay', bookingController.pay);
 router.delete('/:booking_id/cancel', authMiddleware.verifyToken, bookingController.cancelBooking);
+router.get('/reports/shift', authMiddleware.verifyToken, bookingController.getShiftReport);
 module.exports = router;

@@ -180,5 +180,6 @@ module.exports = {
   getUserBookings, 
   cancelBooking,
   checkout,
-  pay
+  pay,
+  getShiftReport
 };
