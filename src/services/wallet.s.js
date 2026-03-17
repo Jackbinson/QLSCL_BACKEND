@@ -1,52 +1,48 @@
-<<<<<<< Updated upstream
-const knexConfig = require('../../knexfile'); // Lưu ý đường dẫn này tùy thuộc vào vị trí file của bạn
-=======
 const knexConfig = require('../../knexfile'); 
->>>>>>> Stashed changes
 const db = require('knex')(knexConfig.development || knexConfig);
 
+// 1. HÀM TÁCH ID TỪ NỘI DUNG CHUYỂN KHOẢN
+const extractUserId = (content) => { 
+    if (!content) return null;
+    const match = content.match(/NAP\s*(\d+)/i);
+    if (match && match[1]) {
+        return parseInt(match[1]);
+    }
+    return null;
+};
+
+// 2. HÀM NẠP TIỀN GIẢ LẬP (Dùng chữ 'Users' viết hoa theo chuẩn Database)
 const topUpMock = async (userId, amount) => {
-    if (amount < 0 ) {
+    if (amount <= 0 ) {
         throw new Error("Số tiền nạp phải lớn hơn 0!");
     } 
-<<<<<<< Updated upstream
-    const [updatedUser] = await db('Users')
-    .where({id: userId}) 
-    .increment('wallet_balance', amount)
-    .returning(['id','username','wallet_balance']);
-=======
     
     const [updatedUser] = await db('Users') 
         .where({ id: userId }) 
         .increment('wallet_balance', amount)
         .returning(['id', 'username', 'wallet_balance']);
         
->>>>>>> Stashed changes
     if (!updatedUser) { 
         throw new Error('Người dùng không tồn tại!');
     }
     return updatedUser;
 }
+
+// 3. HÀM XỬ LÝ WEBHOOK SEPAY THỰC TẾ
 const processSePayWebhook = async (data) => {
-    // Lấy thêm gateway và referenceCode từ data của SePay
     const { id, transferAmount, transferContent, gateway, referenceCode } = data;
 
-    const existingTrans = await Transaction.findOne({ where: { transaction_id: id } });
-    if (existingTrans) {
-        console.log(` [WEBHOOK] Giao dịch ${id} đã được xử lý trước đó. Bỏ qua.`);
-        return;
+    const existingTransaction = await db('transactions')
+        .where({ gateway_transaction_id: id })
+        .first();
+
+    if (existingTransaction) {
+        console.log(`⚠️ [IDEMPOTENCY] Giao dịch ${id} đã được xử lý. Bỏ qua.`);
+        return { success: true, message: 'Already processed' };
     }
 
+    // BƯỚC 2: Bóc tách User ID và kiểm tra lỗi cú pháp
     const userId = extractUserId(transferContent); 
-<<<<<<< Updated upstream
-
-    await Transaction.create({
-        transaction_id: id,
-        user_id: userId,
-        amount: transferAmount,
-        content: transferContent,
-        status: 'success'
-=======
     if (!userId) {
         console.log(`❌ [LỖI] Nội dung chuyển khoản sai cú pháp: "${transferContent}"`);
         return { success: true, message: 'Invalid transfer content syntax' }; 
@@ -54,13 +50,14 @@ const processSePayWebhook = async (data) => {
 
     // BƯỚC 3: Thực thi Database Transaction để cộng tiền và lưu lịch sử
     return await db.transaction(async (trx) => {
+        // ĐÃ SỬA: Khớp tên cột với DB và dùng đúng biến userId
         await trx('transactions').insert({
             gateway_transaction_id: id,
-            transfer_amount: transferAmount,      
-            transfer_content: transferContent,    
-            user_id: userId,                     
-            gateway: gateway || 'Unknown',       
-            reference_code: referenceCode || null 
+            transfer_amount: transferAmount,      // Sửa lại cho khớp DB
+            transfer_content: transferContent,    // Sửa lại cho khớp DB
+            user_id: userId,                      // Fix lỗi ẩn: dùng userId đã bóc tách ở Bước 2
+            gateway: gateway || 'Unknown',        // Lưu thêm ngân hàng
+            reference_code: referenceCode || null // Lưu thêm mã tham chiếu
         });
 
         // Cộng tiền vào ví 
@@ -70,11 +67,7 @@ const processSePayWebhook = async (data) => {
 
         console.log(`✅ [SUCCESS] Đã cộng ${transferAmount} cho User ${userId}. ID: ${id}`);
         return { success: true };
->>>>>>> Stashed changes
     });
-
-    await User.increment({ wallet_balance: transferAmount }, { where: { id: userId } });
-    
-    console.log(`[WEBHOOK] Đã nạp thành công ${transferAmount} cho User ${userId}`);
 };
+
 module.exports = { topUpMock, processSePayWebhook };
