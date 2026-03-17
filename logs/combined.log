@@ -324,3 +324,7 @@
 {"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 18:00:00"}
 {"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 18:15:00"}
 {"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 18:15:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 18:30:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 18:30:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 18:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 18:45:00"}
