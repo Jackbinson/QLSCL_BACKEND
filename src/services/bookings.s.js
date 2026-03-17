@@ -1,6 +1,46 @@
 const knexConfig = require('../../knexfile');
 const db = require('knex')(knexConfig.development || knexConfig);
+const PENALTY_RATE_PER_MINUTE = 2000;
+const GRACE_PERIOD_MINUTES = 5;
+const checkoutBooking = async (bookingId, actualEndTimeStr) => {
+    const booking = await db('Bookings').where({id: bookingId}).first();
+    if (!booking) throw new Error('Không tìm thấy thông tin đơn đặt sân!');
 
+    const parseMinutes = (timeStr) => {
+        const [hours, minutes] = timeStr.split(':').map(Number);
+        return hours * 60 + minutes;
+    };
+
+    const scheduledEndMinutes = parseMinutes(booking.end_time);
+    const actualEndMinutes = parseMinutes(actualEndTimeStr); // Đã sửa chữ i thường
+    
+    let penaltyFee = 0;
+    let overdueMinutes = actualEndMinutes - scheduledEndMinutes;
+
+    // Đã sửa chữ PERIOD
+    if (overdueMinutes > GRACE_PERIOD_MINUTES) {
+        penaltyFee = overdueMinutes * PENALTY_RATE_PER_MINUTE;
+    } else if (overdueMinutes < 0) {
+        overdueMinutes = 0;
+    } 
+
+    await db('Bookings').where({id: bookingId}).update({
+        actual_end_time: actualEndTimeStr,
+        penalty_fee: penaltyFee // Đã sửa lại đúng tên cột trong Database
+    });
+
+    const updatedBooking = await db('Bookings').where({id : bookingId}).first();
+    
+    return {
+        isOverdue: penaltyFee > 0,
+        overdueMinutes: overdueMinutes,
+        penaltyFee: penaltyFee,
+        message: penaltyFee > 0 
+        ? `Khách ra trễ ${overdueMinutes} phút. Phạt ${penaltyFee.toLocaleString('vi-VN')} VNĐ.`
+        : `Khách trả sân đúng giờ. Không phát sinh phí phạt.`, // Đã sửa lỗi chính tả
+        bookingDetails: updatedBooking
+    };
+};
 // 1. Chức năng Đặt sân
 const createBooking = async (data) => {
     const { user_id, username, court_id, booking_date, start_time, end_time } = data;
@@ -102,11 +142,55 @@ const updateCompletedBookings = async () => {
         throw error;
     }
 };
-
+// Thanh toán tại quầy
+const payAtCounter = async(bookingId, cashReceived) => { 
+    const booking = await db('Bookings').where({
+        id: bookingId
+    }).first();
+    if (!booking) { 
+        throw new Error('Hiện tại chúng tôi không tìm thấy thông tin dơn đặt sân!');
+    }
+    if (booking.status === 'Fully Paid') {
+        throw new Error('Đơn này đã được thanh toán từ trước!')
+    }
+    const basePrice = Number(booking.total_price || 0);
+    const penaltyFee = Number(booking.penalty_fee || 0);
+    const totalAmountToPay = basePrice + penaltyFee;
+    if (Number(cashReceived) < totalAmountToPay) { 
+        throw new Error(`Ví khách hiện giờ đang thiếu tiền! Cần thanh toán": ${totalAmountToPay}`)
+    }
+    await db.transaction(async (trx) => {
+        await trx('Bookings').where({
+            id: bookingId
+        }).update({
+            status: 'Fully Paid',
+            updated_at: new Date()
+        });
+    })
+    await trx('transaction').insert({
+        user_id: booking.user_id,
+        booking_id: bookingId,
+        transfer_amount: totalAmountToPay,
+        status: 'success',
+    });
+    const changeAmount = Number(cashReceived) - totalAmountToPay;
+    const finalBooking = await db('Bookings').where({
+        id: bookingId
+    }).first()
+    return {
+        message: 'Thanh toán thành công! Đã chốt đơn.',
+        totalAmountToPay: totalAmountToPay,
+        cashReceived: Number(cashReceived),
+        changeAmount: changeAmount,
+        bookingDetails: finalBooking
+    };
+};
 module.exports = {
     createBooking,
     getUserBookings,
     cancelBooking,
     checkAvailability,
-    updateCompletedBookings
+    updateCompletedBookings,
+    checkoutBooking,
+    payAtCounter
 };

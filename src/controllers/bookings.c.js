@@ -1,6 +1,21 @@
 const bookingService = require('../services/bookings.s');
-const logger = require('../utils/logger'); // Đưa logger lên đầu file
+const logger = require('../utils/logger'); 
+const checkout = async (req, res) => {
+    try {
+        const { id } = req.params; 
+        const { actual_end_time } = req.body; 
 
+        if (!actual_end_time) {
+            return res.status(400).json({ success: false, message: 'Vui lòng cung cấp giờ trả sân thực tế!' });
+        }
+
+        const result = await bookingService.checkoutBooking(id, actual_end_time);
+        return res.status(200).json({ success: true, data: result });
+        
+    } catch (error) {
+        return res.status(500).json({ success: false, message: error.message });
+    }
+};
 // 1. Đặt sân: Lấy thông tin định danh trực tiếp từ Token
 const bookCourt = async (req, res) => {
   try {
@@ -112,10 +127,34 @@ const cancelBooking = async (req, res) => {
     });
   }
 };
-
+// thanh toán tại quầy
+const pay = async (req,res)  => {
+  try { 
+    const {id} = req.params;
+    const {cash_received} = req.body;
+    if (!cash_received) { 
+      return res.status(400).json({
+        success: false, 
+        message: 'Vui lòng nhập số tiền khách đưa!'
+      });
+    }
+    const result = await bookingService.payAtCounter(id, cash_received);
+    return res.status(200).json({
+      success: true,
+      data: result
+    })
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
 module.exports = { 
   bookCourt, 
   checkAvailability, 
   getUserBookings, 
-  cancelBooking 
+  cancelBooking,
+  checkout,
+  pay
 };

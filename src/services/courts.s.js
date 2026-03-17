@@ -16,6 +16,7 @@ const addCourt = async (courtData) => {
 const updateCourtStatus = async(id,status) => {
     return await db('Courts').where({id}).update({status});
 };
+
 module.exports = {
     getAllCourts,
     addCourt,
