@@ -1,3 +1,6 @@
 # Bỏ qua các file ghi log hệ thống
 logs/
 *.log
+node_modules/
+public/uploads/courts/*
+.env
