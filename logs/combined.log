@@ -328,3 +328,103 @@
 {"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 18:30:00"}
 {"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 18:45:00"}
 {"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 18:45:00"}
+{"level":"info","message":"GET /api/bookings/reports/errors - Trạng thái 403 - Thời gian xử lý: 4.260 ms","timestamp":"2026-03-18 03:43:42","type":"HTTP_METRICS"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-18 03:45:00"}
+{"level":"error","message":" [CRON JOB] Lỗi hệ thống khi cập nhật sân: update \"Bookings\" set \"status\" = $1 where \"status\" = $2 and (\"booking_date\" < $3 or (\"booking_date\" = $4 and \"end_time\" < $5)) - relation \"Bookings\" does not exist","timestamp":"2026-03-18 03:45:00"}
+{"level":"info","message":"GET /api/bookings/mine - Trạng thái 403 - Thời gian xử lý: 8.440 ms","timestamp":"2026-03-18 03:59:04","type":"HTTP_METRICS"}
+{"level":"info","message":"GET /api/courts - Trạng thái 500 - Thời gian xử lý: 53.792 ms","timestamp":"2026-03-18 03:59:23","type":"HTTP_METRICS"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-18 04:00:00"}
+{"level":"error","message":" [CRON JOB] Lỗi hệ thống khi cập nhật sân: update \"Bookings\" set \"status\" = $1 where \"status\" = $2 and (\"booking_date\" < $3 or (\"booking_date\" = $4 and \"end_time\" < $5)) - relation \"Bookings\" does not exist","timestamp":"2026-03-18 04:00:00"}
+{"level":"info","message":"GET /api/bookings/mine - Trạng thái 200 - Thời gian xử lý: 59.001 ms","timestamp":"2026-03-18 04:32:44","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/auth/login - Trạng thái 200 - Thời gian xử lý: 95.807 ms","timestamp":"2026-03-18 04:32:55","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/voucher/create - Trạng thái 500 - Thời gian xử lý: 15.441 ms","timestamp":"2026-03-18 04:33:11","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/voucher/create - Trạng thái 500 - Thời gian xử lý: 2.595 ms","timestamp":"2026-03-18 04:34:35","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/voucher/create - Trạng thái 500 - Thời gian xử lý: 35.229 ms","timestamp":"2026-03-18 04:35:15","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/voucher/create - Trạng thái 500 - Thời gian xử lý: 30.584 ms","timestamp":"2026-03-18 04:37:29","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/voucher/create - Trạng thái 500 - Thời gian xử lý: 40.237 ms","timestamp":"2026-03-18 04:40:45","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/voucher/create - Trạng thái 500 - Thời gian xử lý: 2.817 ms","timestamp":"2026-03-18 04:40:46","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/voucher/create - Trạng thái 201 - Thời gian xử lý: 36.353 ms","timestamp":"2026-03-18 04:42:26","type":"HTTP_METRICS"}
+{"level":"info","message":"GET /api/courts - Trạng thái 200 - Thời gian xử lý: 18.484 ms","timestamp":"2026-03-18 04:42:54","type":"HTTP_METRICS"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-18 04:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-18 04:45:00"}
+{"level":"info","message":"PATCH /api/courts/5/image - Trạng thái 401 - Thời gian xử lý: 3.191 ms","timestamp":"2026-03-18 04:54:25","type":"HTTP_METRICS"}
+{"level":"info","message":"PATCH /api/courts/5/image - Trạng thái 500 - Thời gian xử lý: 45.933 ms","timestamp":"2026-03-18 04:54:43","type":"HTTP_METRICS"}
+{"level":"info","message":"PATCH /api/courts/5/image - Trạng thái 500 - Thời gian xử lý: 13.089 ms","timestamp":"2026-03-18 04:56:35","type":"HTTP_METRICS"}
+{"level":"info","message":"PATCH /api/courts/5/image - Trạng thái 500 - Thời gian xử lý: 81.071 ms","timestamp":"2026-03-18 04:58:44","type":"HTTP_METRICS"}
+{"level":"info","message":"PATCH /api/courts/5/image - Trạng thái 500 - Thời gian xử lý: 106.148 ms","timestamp":"2026-03-18 04:59:34","type":"HTTP_METRICS"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-18 05:00:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-18 05:00:00"}
+{"level":"info","message":"PATCH /api/courts/5/image - Trạng thái 500 - Thời gian xử lý: 340.426 ms","timestamp":"2026-03-18 05:01:55","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/auth/login - Trạng thái 200 - Thời gian xử lý: 189.379 ms","timestamp":"2026-03-19 14:14:17","type":"HTTP_METRICS"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-19 14:15:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-19 14:15:00"}
+{"level":"info","message":"POST /api/auth/login - Trạng thái 200 - Thời gian xử lý: 49.237 ms","timestamp":"2026-03-19 14:15:47","type":"HTTP_METRICS"}
+{"level":"info","message":"PATCH /api/courts/1/type - Trạng thái 400 - Thời gian xử lý: 3.533 ms","timestamp":"2026-03-19 14:16:23","type":"HTTP_METRICS"}
+{"level":"info","message":"PATCH /api/courts/1/type - Trạng thái 400 - Thời gian xử lý: 2.833 ms","timestamp":"2026-03-19 14:16:35","type":"HTTP_METRICS"}
+{"level":"info","message":"PATCH /api/courts/1/type - Trạng thái 400 - Thời gian xử lý: 1.299 ms","timestamp":"2026-03-19 14:16:40","type":"HTTP_METRICS"}
+{"level":"info","message":"PATCH /api/courts/1/type - Trạng thái 200 - Thời gian xử lý: 21.748 ms","timestamp":"2026-03-19 14:16:58","type":"HTTP_METRICS"}
+{"level":"info","message":"GET /api/bookings/mine - Trạng thái 403 - Thời gian xử lý: 1.138 ms","timestamp":"2026-03-19 14:20:31","type":"HTTP_METRICS"}
+{"level":"info","message":"GET /api/bookings/available - Trạng thái 400 - Thời gian xử lý: 0.681 ms","timestamp":"2026-03-19 14:20:36","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/auth/login - Trạng thái 200 - Thời gian xử lý: 45.135 ms","timestamp":"2026-03-19 14:21:48","type":"HTTP_METRICS"}
+{"level":"info","message":"PATCH /api/courts/2/image - Trạng thái 200 - Thời gian xử lý: 122.124 ms","timestamp":"2026-03-19 14:21:58","type":"HTTP_METRICS"}
+{"level":"info","message":"GET /uploads/courts/court-2-1773930118777.webp - Trạng thái 200 - Thời gian xử lý: 20.031 ms","timestamp":"2026-03-19 14:22:01","type":"HTTP_METRICS"}
+{"level":"info","message":"GET /favicon.ico - Trạng thái 404 - Thời gian xử lý: 0.921 ms","timestamp":"2026-03-19 14:22:01","type":"HTTP_METRICS"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-19 14:30:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-19 14:30:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-19 14:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-19 14:45:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-19 15:00:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-19 15:00:00"}
+{"level":"info","message":"GET /api/bookings/mine - Trạng thái 403 - Thời gian xử lý: 35.783 ms","timestamp":"2026-03-19 15:14:37","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/auth/login - Trạng thái 200 - Thời gian xử lý: 121.372 ms","timestamp":"2026-03-19 15:14:44","type":"HTTP_METRICS"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-19 15:15:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-19 15:15:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-19 15:30:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-19 15:30:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-19 15:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-19 15:45:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-19 16:00:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-19 16:00:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-19 16:15:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-19 16:15:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-19 16:30:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-19 16:30:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-19 16:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-19 16:45:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-19 17:00:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-19 17:00:00"}
+{"level":"info","message":"POST /api/courts/5/prices - Trạng thái 404 - Thời gian xử lý: 48.050 ms","timestamp":"2026-03-19 17:01:20","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/courts/5/prices - Trạng thái 401 - Thời gian xử lý: 14.475 ms","timestamp":"2026-03-19 17:03:49","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/auth/login - Trạng thái 200 - Thời gian xử lý: 157.645 ms","timestamp":"2026-03-19 17:03:57","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/courts/5/prices - Trạng thái 500 - Thời gian xử lý: 182.961 ms","timestamp":"2026-03-19 17:04:22","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/courts/1/prices - Trạng thái 201 - Thời gian xử lý: 7.834 ms","timestamp":"2026-03-19 17:08:48","type":"HTTP_METRICS"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-19 17:15:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-19 17:15:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-19 17:30:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-19 17:30:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-19 17:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-19 17:45:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-19 18:00:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-19 18:00:00"}
+{"level":"info","message":"POST /api/auth/login - Trạng thái 200 - Thời gian xử lý: 156.697 ms","timestamp":"2026-03-19 18:03:57","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/bookings - Trạng thái 409 - Thời gian xử lý: 54.811 ms","timestamp":"2026-03-19 18:04:04","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/wallet/topup - Trạng thái 403 - Thời gian xử lý: 3.129 ms","timestamp":"2026-03-19 18:04:21","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/auth/login - Trạng thái 200 - Thời gian xử lý: 53.815 ms","timestamp":"2026-03-19 18:04:26","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/wallet/topup - Trạng thái 403 - Thời gian xử lý: 5.637 ms","timestamp":"2026-03-19 18:04:32","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/wallet/topup - Trạng thái 403 - Thời gian xử lý: 5.714 ms","timestamp":"2026-03-19 18:04:36","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/wallet/topup - Trạng thái 403 - Thời gian xử lý: 1.176 ms","timestamp":"2026-03-19 18:04:41","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/wallet/sepaywebhook - Trạng thái 200 - Thời gian xử lý: 399.576 ms","timestamp":"2026-03-19 18:04:46","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/wallet/topup - Trạng thái 403 - Thời gian xử lý: 1.258 ms","timestamp":"2026-03-19 18:05:07","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/wallet/topup - Trạng thái 200 - Thời gian xử lý: 59.530 ms","timestamp":"2026-03-19 18:08:30","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/auth/login - Trạng thái 200 - Thời gian xử lý: 65.494 ms","timestamp":"2026-03-19 18:08:41","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/wallet/topup - Trạng thái 403 - Thời gian xử lý: 1.459 ms","timestamp":"2026-03-19 18:08:50","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/bookings - Trạng thái 201 - Thời gian xử lý: 63.570 ms","timestamp":"2026-03-19 18:08:58","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/bookings - Trạng thái 409 - Thời gian xử lý: 6.469 ms","timestamp":"2026-03-19 18:09:44","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/bookings - Trạng thái 409 - Thời gian xử lý: 5.099 ms","timestamp":"2026-03-19 18:10:13","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/bookings - Trạng thái 409 - Thời gian xử lý: 7.092 ms","timestamp":"2026-03-19 18:10:20","type":"HTTP_METRICS"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-19 18:15:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-19 18:15:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-19 18:30:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-19 18:30:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-19 18:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-19 18:45:00"}

@@ -48,41 +48,70 @@ const createBooking = async (data) => {
     const { user_id, username, court_id, booking_date, start_time, end_time } = data;
 
     return await db.transaction(async (trx) => {
-        try {
-            const court = await trx('Courts').where({ id: court_id, status: 'Active' }).first();
-            if (!court) throw new Error('Sân không khả dụng hoặc đang bảo trì!');
+        // 1. KIỂM TRA SÂN
+        const court = await trx('Courts').where({ id: court_id, status: 'Active' }).first();
+        if (!court) throw new Error('Sân không khả dụng hoặc đang bảo trì!');
 
-            const price = court.price_per_hour;
-            const user = await trx('Users').where({ id: user_id }).first();
-            if (!user) throw new Error('Người dùng không tồn tại!');
+        const overlapping = await trx('Bookings')
+            .where({ court_id, booking_date })
+            .whereIn('status', ['Pending', 'Partially Paid', 'Fully Paid', 'Active'])
+            .andWhere(function() {
+                this.where('start_time', '<', end_time)
+                    .andWhere('end_time', '>', start_time);
+            })
+            .first();
 
-            if (user.wallet_balance < price) {
-                const thieu = price - user.wallet_balance;
-                throw new Error(`Số dư ví không đủ! Vui lòng nạp thêm ít nhất ${thieu} VND để chốt sân này`);
-            }
-
-            // Trừ tiền trong ví
-            await trx('Users').where({ id: user_id }).decrement('wallet_balance', price);
-
-            const [newBooking] = await trx('Bookings').insert({
-                user_id,
-                court_id,
-                booking_date,
-                start_time,
-                end_time,
-                total_price: price,
-                status: 'Fully Paid' 
-            }).returning('*');
-
-            return newBooking;
-
-        } catch (error) {
-            if (error.code === '23505') { // Lỗi trùng unique constraint
-                throw new Error(`Rất tiếc, sân này đã được đặt vào khung giờ này rồi. ${username} vui lòng chọn khung giờ hoặc sân khác nhé!`);
-            }
-            throw error;
+        if (overlapping) {
+            throw new Error(`Rất tiếc, sân này đã được đặt vào khung giờ này rồi. ${username || 'Bạn'} vui lòng chọn giờ khác nhé!`);
         }
-    });
+
+        const getHours = (timeStr) => {
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            return hours + (minutes / 60);
+        };
+        const startH = getHours(start_time);
+        const endH = getHours(end_time);
+        const duration = endH - startH;
+
+        if (duration <= 0) throw new Error('Giờ kết thúc phải sau giờ bắt đầu!');
+
+        const goldenRules = await trx('CourtPrices').where({ court_id });
+        let appliedPricePerHour = court.price_per_hour; 
+
+        for (let rule of goldenRules) {
+            const ruleStartH = getHours(rule.start_time);
+            const ruleEndH = getHours(rule.end_time);
+            if (startH >= ruleStartH && startH < ruleEndH) {
+                appliedPricePerHour = rule.price;
+                break;
+            }
+        }
+        
+        const total_price = appliedPricePerHour * duration;
+
+        // 5. KIỂM TRA VÍ NGƯỜI DÙNG
+        const user = await trx('Users').where({ id: user_id }).first();
+        if (!user) throw new Error('Người dùng không tồn tại!');
+
+        if (user.wallet_balance < total_price) {
+            const thieu = total_price - user.wallet_balance;
+            throw new Error(`Số dư ví không đủ! Vui lòng nạp thêm ít nhất ${thieu} VND để chốt sân này.`);
+        }
+
+        await trx('Users').where({ id: user_id }).decrement('wallet_balance', total_price);
+
+        const [newBooking] = await trx('Bookings').insert({
+            user_id,
+            court_id,
+            booking_date,
+            start_time,
+            end_time,
+            total_price, 
+            status: 'Fully Paid' 
+        }).returning('*');
+
+        return newBooking;
+    }); 
 };
 
 // 2. Lấy lịch sử đặt sân

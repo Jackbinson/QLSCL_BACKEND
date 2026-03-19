@@ -8,7 +8,6 @@ exports.up = async function(knex) {
     
     // Cột này cực kỳ quan trọng để chặn SePay gọi Webhook 2 lần gây cộng tiền trùng
     table.string('gateway_transaction_id').notNullable().unique(); 
-    
     table.string('gateway'); // Tên ngân hàng (VD: MBBank)
     table.decimal('transfer_amount', 12, 2).notNullable(); // Số tiền nạp
     table.string('transfer_content'); // Nội dung chuyển khoản (VD: NAP 1)

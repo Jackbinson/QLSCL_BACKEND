@@ -16,7 +16,7 @@ router.get('/qr', verifyToken, walletController.generateQR);
 router.post(
     '/topup', 
     verifyToken, 
-    authorizeRoles(['admin', 'staff']), 
+    authorizeRoles(['Admin', 'Staff']), 
     walletController.topUp
 );
 

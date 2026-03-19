@@ -20,7 +20,7 @@ const createTestVoucher = async (req, res) => {
     try {
         const { code, discount_percent, max_discount_amount, expiry_date } = req.body;
 
-        await db('Vouchers').insert({
+        await db('vouchers').insert({
             code, discount_percent, max_discount_amount, expiry_date, is_active: true
         });
 

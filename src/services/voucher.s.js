@@ -2,7 +2,7 @@ const knexConfig = require('../../knexfile');
 const db = require('knex')(knexConfig.development || knexConfig);
 
 const checkVoucher = async (code, totalAmount) => {
-    const voucher = await db('Vouchers').where({ code }).first();
+    const voucher = await db('vouchers').where({ code }).first();
     if (!voucher) return { isValid: false, message: 'Mã giảm giá không tồn tại!' };
     if (!voucher.is_active) return { isValid: false, message: 'Mã giảm giá đã bị vô hiệu hóa!' };
     

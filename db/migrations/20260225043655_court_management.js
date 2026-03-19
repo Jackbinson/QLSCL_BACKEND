@@ -21,7 +21,7 @@ exports.up = async function(knex) {
     table.string('address').notNullable();
   });
 
-  // 3. Bảng Courts (Đổi thành số nhiều)
+  // 3. Bảng Courts
   await knex.schema.createTable('Courts', (table) => { 
     table.increments('id').primary();
     table.string('name').notNullable();
@@ -31,7 +31,7 @@ exports.up = async function(knex) {
     table.enum('status', ['Active', 'Maintenance']).defaultTo('Active');
   });
 
-  // 4. Bảng Bookings (Đổi thành số nhiều)
+  // 4. Bảng Bookings
   await knex.schema.createTable('Bookings', (table) => { 
     table.increments('id').primary();
     table.integer('user_id').unsigned().references('id').inTable('Users');
@@ -46,21 +46,11 @@ exports.up = async function(knex) {
     // Đã bỏ end_time để chặn trùng lịch tại một thời điểm bắt đầu cụ thể
     table.unique(['court_id', 'booking_date', 'start_time']);
   });
-  await knex.schema.createTable('transactions', (table) => {
-    table.increments('id').primary();
-    table.string('gateway_transaction_id').unique().notNullable(); // Mã ID từ SePay
-    table.decimal('amount', 15, 2).notNullable();
-    table.integer('user_id').unsigned().references('id').inTable('users');
-    table.string('content');
-    table.timestamps(true, true);
-  });
 };
 
 exports.down = async function(knex) {
-  // Thứ tự xóa từ bảng con (chứa khóa ngoại) đến bảng cha
   await knex.schema.dropTableIfExists('Bookings');
   await knex.schema.dropTableIfExists('Courts');
   await knex.schema.dropTableIfExists('Locations');
   await knex.schema.dropTableIfExists('Users');
-  await knex.schema.dropTableIfExists('transactions');
 };
