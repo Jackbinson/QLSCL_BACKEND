@@ -5,8 +5,8 @@ const PENALTY_RATE_PER_MINUTE = 2000;
 const GRACE_PERIOD_MINUTES = 5;
 
 const checkoutBooking = async (bookingId, actualEndTimeStr) => {
-    const booking = await db('Bookings').where({id: bookingId}).first();
-    if (!booking) throw new Error('Không tìm thấy thông tin đơn đặt sân!');
+    const booking = await db('Bookings').where({ id: bookingId }).first();
+    if (!booking) throw new Error('Khong tim thay thong tin don dat san!');
 
     const parseMinutes = (timeStr) => {
         const [hours, minutes] = timeStr.split(':').map(Number);
@@ -14,8 +14,8 @@ const checkoutBooking = async (bookingId, actualEndTimeStr) => {
     };
 
     const scheduledEndMinutes = parseMinutes(booking.end_time);
-    const actualEndMinutes = parseMinutes(actualEndTimeStr); 
-    
+    const actualEndMinutes = parseMinutes(actualEndTimeStr);
+
     let penaltyFee = 0;
     let overdueMinutes = actualEndMinutes - scheduledEndMinutes;
 
@@ -23,69 +23,98 @@ const checkoutBooking = async (bookingId, actualEndTimeStr) => {
         penaltyFee = overdueMinutes * PENALTY_RATE_PER_MINUTE;
     } else if (overdueMinutes < 0) {
         overdueMinutes = 0;
-    } 
+    }
 
-    await db('Bookings').where({id: bookingId}).update({
+    await db('Bookings').where({ id: bookingId }).update({
         actual_end_time: actualEndTimeStr,
-        penalty_fee: penaltyFee 
+        penalty_fee: penaltyFee
     });
 
-    const updatedBooking = await db('Bookings').where({id : bookingId}).first();
-    
+    const updatedBooking = await db('Bookings').where({ id: bookingId }).first();
+
     return {
         isOverdue: penaltyFee > 0,
-        overdueMinutes: overdueMinutes,
-        penaltyFee: penaltyFee,
-        message: penaltyFee > 0 
-        ? `Khách ra trễ ${overdueMinutes} phút. Phạt ${penaltyFee.toLocaleString('vi-VN')} VNĐ.`
-        : `Khách trả sân đúng giờ. Không phát sinh phí phạt.`, 
+        overdueMinutes,
+        penaltyFee,
+        message: penaltyFee > 0
+            ? `Khach ra tre ${overdueMinutes} phut. Phat ${penaltyFee.toLocaleString('vi-VN')} VND.`
+            : 'Khach tra san dung gio. Khong phat sinh phi phat.',
         bookingDetails: updatedBooking
     };
 };
 
-// 1. Chức năng Đặt sân
+// 1. Chuc nang Dat san
 const createBooking = async (data) => {
     const { user_id, username, court_id, booking_date, start_time, end_time } = data;
 
     return await db.transaction(async (trx) => {
-        try {
-            const court = await trx('Courts').where({ id: court_id, status: 'Active' }).first();
-            if (!court) throw new Error('Sân không khả dụng hoặc đang bảo trì!');
+        const court = await trx('Courts').where({ id: court_id, status: 'Active' }).first();
+        if (!court) throw new Error('San khong kha dung hoac dang bao tri!');
 
-            const price = court.price_per_hour;
-            const user = await trx('Users').where({ id: user_id }).first();
-            if (!user) throw new Error('Người dùng không tồn tại!');
+        const overlapping = await trx('Bookings')
+            .where({ court_id, booking_date })
+            .whereIn('status', ['Pending', 'Partially Paid', 'Fully Paid', 'Active'])
+            .andWhere(function () {
+                this.where('start_time', '<', end_time)
+                    .andWhere('end_time', '>', start_time);
+            })
+            .first();
 
-            if (user.wallet_balance < price) {
-                const thieu = price - user.wallet_balance;
-                throw new Error(`Số dư ví không đủ! Vui lòng nạp thêm ít nhất ${thieu} VND để chốt sân này`);
-            }
-
-            // Trừ tiền trong ví
-            await trx('Users').where({ id: user_id }).decrement('wallet_balance', price);
-
-            const [newBooking] = await trx('Bookings').insert({
-                user_id,
-                court_id,
-                booking_date,
-                start_time,
-                end_time,
-                total_price: price,
-                status: 'Fully Paid' 
-            }).returning('*');
-
-            return newBooking;
-
-        } catch (error) {
-            if (error.code === '23505') { // Lỗi trùng unique constraint
-                throw new Error(`Rất tiếc, sân này đã được đặt vào khung giờ này rồi. ${username} vui lòng chọn khung giờ hoặc sân khác nhé!`);
-            }
-            throw error;
+        if (overlapping) {
+            throw new Error(`Rat tiec, san nay da duoc dat vao khung gio nay roi. ${username || 'Ban'} vui long chon gio khac nhe!`);
         }
+
+        const getHours = (timeStr) => {
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            return hours + (minutes / 60);
+        };
+
+        const startH = getHours(start_time);
+        const endH = getHours(end_time);
+        const duration = endH - startH;
+
+        if (duration <= 0) throw new Error('Gio ket thuc phai sau gio bat dau!');
+
+        const goldenRules = await trx('CourtPrices').where({ court_id });
+        let appliedPricePerHour = court.price_per_hour;
+
+        for (const rule of goldenRules) {
+            const ruleStartH = getHours(rule.start_time);
+            const ruleEndH = getHours(rule.end_time);
+
+            if (startH >= ruleStartH && startH < ruleEndH) {
+                appliedPricePerHour = rule.price;
+                break;
+            }
+        }
+
+        const total_price = appliedPricePerHour * duration;
+
+        const user = await trx('Users').where({ id: user_id }).first();
+        if (!user) throw new Error('Nguoi dung khong ton tai!');
+
+        if (user.wallet_balance < total_price) {
+            const thieu = total_price - user.wallet_balance;
+            throw new Error(`So du vi khong du! Vui long nap them it nhat ${thieu} VND de chot san nay.`);
+        }
+
+        await trx('Users').where({ id: user_id }).decrement('wallet_balance', total_price);
+
+        const [newBooking] = await trx('Bookings').insert({
+            user_id,
+            court_id,
+            booking_date,
+            start_time,
+            end_time,
+            total_price,
+            status: 'Fully Paid'
+        }).returning('*');
+
+        return newBooking;
     });
 };
 
-// 2. Lấy lịch sử đặt sân
+// 2. Lay lich su dat san
 const getUserBookings = async (userId) => {
     return await db('Bookings')
         .join('Courts', 'Bookings.court_id', 'Courts.id')
@@ -94,16 +123,14 @@ const getUserBookings = async (userId) => {
         .orderBy('booking_date', 'desc');
 };
 
-// 3. Hủy lịch đặt sân
+// 3. Huy lich dat san
 const cancelBooking = async (bookingId, userId) => {
     return await db.transaction(async (trx) => {
-        // 1. Lấy thông tin đơn đặt sân
         const booking = await trx('Bookings').where({ id: bookingId, user_id: userId }).first();
-        
-        if (!booking) throw new Error('Không tìm thấy đơn đặt sân hoặc bạn không có quyền hủy!');
-        if (booking.status === 'Cancelled') throw new Error('Đơn này đã được hủy từ trước rồi!');
 
-        // 2. Tính toán thời gian từ hiện tại đến lúc nhận sân
+        if (!booking) throw new Error('Khong tim thay don dat san hoac ban khong co quyen huy!');
+        if (booking.status === 'Cancelled') throw new Error('Don nay da duoc huy tu truoc roi!');
+
         const dateObj = new Date(booking.booking_date);
         const dateString = dateObj.toISOString().split('T')[0];
         const bookingDateTime = new Date(`${dateString}T${booking.start_time}`);
@@ -112,30 +139,26 @@ const cancelBooking = async (bookingId, userId) => {
         const hoursUntilBooking = (bookingDateTime - now) / (1000 * 60 * 60);
 
         if (hoursUntilBooking < 0) {
-            throw new Error('Sân đã đến giờ hoặc đã qua giờ chơi, không thể hủy!');
+            throw new Error('San da den gio hoac da qua gio choi, khong the huy!');
         }
 
-        // 3. Quy tắc 75/50/25 (Xác định tỷ lệ hoàn)
         let refundRatio = 0;
         if (hoursUntilBooking >= 72) {
-            refundRatio = 0.75; 
+            refundRatio = 0.75;
         } else if (hoursUntilBooking >= 24) {
-            refundRatio = 0.50; 
+            refundRatio = 0.5;
         } else {
-            refundRatio = 0.25; 
+            refundRatio = 0.25;
         }
 
-        // 4. Tính số tiền hoàn lại
         const paidAmount = Number(booking.total_price || 0);
         const refundAmount = paidAmount * refundRatio;
 
-        // 5. Cập nhật trạng thái đơn thành Cancelled
         await trx('Bookings').where({ id: bookingId }).update({
             status: 'Cancelled',
             updated_at: new Date()
         });
 
-        // 6. Cộng tiền hoàn vào Ví Điện Tử của Khách
         if (refundAmount > 0) {
             const user = await trx('Users').where({ id: userId }).first();
             const currentBalance = Number(user.wallet_balance || 0);
@@ -143,26 +166,24 @@ const cancelBooking = async (bookingId, userId) => {
             await trx('Users').where({ id: userId }).update({
                 wallet_balance: currentBalance + refundAmount
             });
-            
-            // ĐÃ FIX: Chèn thêm gateway_transaction_id ảo để qua ải kiểm duyệt
+
             await trx('transactions').insert({
                 user_id: userId,
-                // booking_id: bookingId, 
                 transfer_amount: refundAmount,
                 status: 'success',
-                gateway_transaction_id: `REFUND_${bookingId}_${Date.now()}` 
+                gateway_transaction_id: `REFUND_${bookingId}_${Date.now()}`
             });
         }
 
         return {
-            message: `Đã hoàn ${refundRatio * 100}% (${refundAmount.toLocaleString('vi-VN')} VNĐ) vào ví.`,
-            refundAmount: refundAmount,
+            message: `Da hoan ${refundRatio * 100}% (${refundAmount.toLocaleString('vi-VN')} VND) vao vi.`,
+            refundAmount,
             refundRatio: `${refundRatio * 100}%`
         };
     });
 };
 
-// 4. Kiểm tra sân trống
+// 4. Kiem tra san trong
 const checkAvailability = async (date, time) => {
     const booked = await db('Bookings')
         .where({ booking_date: date, start_time: time })
@@ -171,7 +192,7 @@ const checkAvailability = async (date, time) => {
     return await db('Courts').where({ status: 'Active' }).whereNotIn('id', booked);
 };
 
-// 5. Cập nhật trạng thái tự động 
+// 5. Cap nhat trang thai tu dong
 const updateCompletedBookings = async () => {
     try {
         const now = new Date();
@@ -179,15 +200,15 @@ const updateCompletedBookings = async () => {
         const currentTime = now.toTimeString().split(' ')[0];
 
         const updatedRows = await db('Bookings')
-            .where('status', 'Fully Paid') 
-            .andWhere(function() {
+            .where('status', 'Fully Paid')
+            .andWhere(function () {
                 this.where('booking_date', '<', currentDate)
-                    .orWhere(function() {
+                    .orWhere(function () {
                         this.where('booking_date', '=', currentDate)
                             .andWhere('end_time', '<', currentTime);
                     });
             })
-            .update({ status: 'Active' }); 
+            .update({ status: 'Active' });
 
         return updatedRows;
     } catch (error) {
@@ -195,19 +216,19 @@ const updateCompletedBookings = async () => {
     }
 };
 
-// 6. Thanh toán tại quầy
-const payAtCounter = async(bookingId, cashReceived) => { 
+// 6. Thanh toan tai quay
+const payAtCounter = async (bookingId, cashReceived) => {
     const booking = await db('Bookings').where({ id: bookingId }).first();
-    
-    if (!booking) throw new Error('Hiện tại chúng tôi không tìm thấy thông tin đơn đặt sân!');
-    if (booking.status === 'Fully Paid') throw new Error('Đơn này đã được thanh toán từ trước!');
-    
+
+    if (!booking) throw new Error('Hien tai chung toi khong tim thay thong tin don dat san!');
+    if (booking.status === 'Fully Paid') throw new Error('Don nay da duoc thanh toan tu truoc!');
+
     const basePrice = Number(booking.total_price || 0);
     const penaltyFee = Number(booking.penalty_fee || 0);
     const totalAmountToPay = basePrice + penaltyFee;
-    
-    if (Number(cashReceived) < totalAmountToPay) { 
-        throw new Error(`Khách đưa thiếu tiền! Cần thanh toán: ${totalAmountToPay.toLocaleString('vi-VN')} VNĐ`);
+
+    if (Number(cashReceived) < totalAmountToPay) {
+        throw new Error(`Khach dua thieu tien! Can thanh toan: ${totalAmountToPay.toLocaleString('vi-VN')} VND`);
     }
 
     await db.transaction(async (trx) => {
@@ -225,37 +246,38 @@ const payAtCounter = async(bookingId, cashReceived) => {
 
     const changeAmount = Number(cashReceived) - totalAmountToPay;
     const finalBooking = await db('Bookings').where({ id: bookingId }).first();
-    
+
     return {
-        message: 'Thanh toán thành công! Đã chốt đơn.',
-        totalAmountToPay: totalAmountToPay,
+        message: 'Thanh toan thanh cong! Da chot don.',
+        totalAmountToPay,
         cashReceived: Number(cashReceived),
-        changeAmount: changeAmount,
+        changeAmount,
         bookingDetails: finalBooking
     };
 };
-// Báo cáo doanh thu 
+
+// Bao cao doanh thu
 const getShiftRevenue = async (startTime, endTime) => {
     const transactions = await db('transactions')
-    .where('status','success')
-    .whereBetween('created_at',[startTime,endTime]);
-let totalCash = 0
-let totalTransfer = 0;
-let totalRefund = 0;
-transactions.forEach(tx => {
-    const amount = Number(tx.transfer_amount || 0);
-    const gatewayId = tx.gateway_transaction_id || '';
-    if (gatewayId.startsWith('CASH_')) {
-        totalCash += amount;
-    } else if (gatewayId.startsWith('REFUND_')) {
-        totalRefund += amount;
-    } else {
-        totalTransfer += amount;
-    }
-});
-    const netRevenue  = totalCash + totalTransfer - totalRefund;
-    return { 
-        shift_duration: `${startTime} đến ${endTime}`,
+        .where('status', 'success')
+        .whereBetween('created_at', [startTime, endTime]);
+    let totalCash = 0;
+    let totalTransfer = 0;
+    let totalRefund = 0;
+    transactions.forEach((tx) => {
+        const amount = Number(tx.transfer_amount || 0);
+        const gatewayId = tx.gateway_transaction_id || '';
+        if (gatewayId.startsWith('CASH_')) {
+            totalCash += amount;
+        } else if (gatewayId.startsWith('REFUND_')) {
+            totalRefund += amount;
+        } else {
+            totalTransfer += amount;
+        }
+    });
+    const netRevenue = totalCash + totalTransfer - totalRefund;
+    return {
+        shift_duration: `${startTime} den ${endTime}`,
         total_transactions: transactions.length,
         summary: {
             cash_received: totalCash,
@@ -263,14 +285,16 @@ transactions.forEach(tx => {
             refunded_amount: totalRefund,
             net_revenue: netRevenue
         },
-        details: transactions 
+        details: transactions
     };
 };
+
 const getFailedTransactions = async () => {
     return await db('transactions')
-        .where('status', 'failed') 
+        .where('status', 'failed')
         .orderBy('created_at', 'desc');
 };
+
 module.exports = {
     createBooking,
     getUserBookings,
