@@ -8,3 +8,323 @@
 {"level":"info","message":"🤖 [CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-11 02:00:00"}
 {"level":"error","message":"❌ [CRON JOB] Lỗi hệ thống khi cập nhật sân: bookingService.updateCompletedBookings is not a function","timestamp":"2026-03-11 02:00:00"}
 {"level":"error","message":"Lỗi api thống kê Admin: bookingService.updateCompletedBookings is not a function","timestamp":"2026-03-11 02:04:37"}
+{"level":"info","message":"🤖 [CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-11 03:15:00"}
+{"level":"info","message":"⏳ [CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-11 03:15:00"}
+{"level":"info","message":"🤖 [CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-11 03:30:00"}
+{"level":"info","message":"⏳ [CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-11 03:30:00"}
+{"level":"info","message":"🤖 [CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-11 03:45:00"}
+{"level":"info","message":"🤖 [CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-11 10:45:00"}
+{"level":"info","message":"✅ [CRON JOB] Đã tự động chuyển 1 sân thành 'Completed'.","timestamp":"2026-03-11 03:45:00"}
+{"level":"info","message":"⏳ [CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-11 10:45:00"}
+{"level":"info","message":"🤖 [CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-11 04:00:00"}
+{"level":"info","message":"⏳ [CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-11 04:00:00"}
+{"level":"info","message":"🤖 [CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-11 11:00:00"}
+{"level":"info","message":"⏳ [CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-11 11:00:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-11 04:15:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-11 04:15:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-11 11:15:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-11 11:15:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-11 11:30:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-11 04:30:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-11 11:30:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-11 04:30:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-11 04:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-11 04:45:00"}
+{"level":"info","message":"GET /api/wallet/sepay-webhook - Trạng thái 404 - Thời gian xử lý: 23.159 ms","timestamp":"2026-03-11 04:49:06","type":"HTTP_METRICS"}
+{"level":"info","message":"GET /api/wallet/sepay-webhook - Trạng thái 404 - Thời gian xử lý: 0.352 ms","timestamp":"2026-03-11 04:49:26","type":"HTTP_METRICS"}
+{"level":"info","message":"GET /api/wallet/sepay-webhook - Trạng thái 404 - Thời gian xử lý: 0.599 ms","timestamp":"2026-03-11 04:51:05","type":"HTTP_METRICS"}
+{"level":"info","message":"GET /api/wallet/sepay-webhook - Trạng thái 404 - Thời gian xử lý: 45.335 ms","timestamp":"2026-03-11 04:51:09","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/wallet/sepay-webhook - Trạng thái 404 - Thời gian xử lý: 0.774 ms","timestamp":"2026-03-11 04:51:25","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/wallet/sepay-webhook - Trạng thái 404 - Thời gian xử lý: 0.279 ms","timestamp":"2026-03-11 04:52:00","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/wallet/sepay-webhook - Trạng thái 404 - Thời gian xử lý: 0.371 ms","timestamp":"2026-03-11 04:53:46","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/wallet/sepay-webhook - Trạng thái 404 - Thời gian xử lý: 0.346 ms","timestamp":"2026-03-11 04:54:11","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/wallet/sepay-webhook - Trạng thái 404 - Thời gian xử lý: 0.362 ms","timestamp":"2026-03-11 04:55:59","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/wallet/sepay-webhook - Trạng thái 404 - Thời gian xử lý: 0.449 ms","timestamp":"2026-03-11 04:58:03","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/wallet/sepay-webhook - Trạng thái 404 - Thời gian xử lý: 0.244 ms","timestamp":"2026-03-11 04:58:23","type":"HTTP_METRICS"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-11 05:00:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-11 05:00:00"}
+{"level":"info","message":"POST /api/wallet/sepay-webhook - Trạng thái 404 - Thời gian xử lý: 0.291 ms","timestamp":"2026-03-11 05:00:06","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/wallet/sepaywebhook - Trạng thái 404 - Thời gian xử lý: 0.280 ms","timestamp":"2026-03-11 05:00:21","type":"HTTP_METRICS"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-11 17:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-11 17:45:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-12 06:30:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-12 13:30:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-12 06:30:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-12 13:30:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-12 06:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-12 06:45:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-12 07:00:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-12 07:00:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-12 07:15:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-12 07:15:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-12 07:30:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-12 07:30:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-12 07:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-12 07:45:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-12 08:00:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-12 08:00:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-12 08:15:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-12 08:15:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 03:15:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 03:15:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 03:30:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 03:30:00"}
+{"level":"info","message":"POST /api/bookings/hold - Trạng thái 404 - Thời gian xử lý: 36.393 ms","timestamp":"2026-03-13 03:44:29","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/bookings/hold - Trạng thái 404 - Thời gian xử lý: 0.438 ms","timestamp":"2026-03-13 03:44:41","type":"HTTP_METRICS"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 03:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 03:45:00"}
+{"level":"info","message":"POST /api/bookings/hold-seat - Trạng thái 404 - Thời gian xử lý: 0.374 ms","timestamp":"2026-03-13 03:47:42","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/bookings/hold - Trạng thái 404 - Thời gian xử lý: 0.327 ms","timestamp":"2026-03-13 03:48:07","type":"HTTP_METRICS"}
+{"level":"info","message":"GET /api/movies - Trạng thái 404 - Thời gian xử lý: 0.455 ms","timestamp":"2026-03-13 03:54:20","type":"HTTP_METRICS"}
+{"level":"info","message":"GET /api/movies - Trạng thái 404 - Thời gian xử lý: 0.562 ms","timestamp":"2026-03-13 03:54:36","type":"HTTP_METRICS"}
+{"level":"info","message":"GET /api/admin/bookings - Trạng thái 404 - Thời gian xử lý: 0.461 ms","timestamp":"2026-03-13 03:56:55","type":"HTTP_METRICS"}
+{"level":"info","message":"GET /api/movies - Trạng thái 404 - Thời gian xử lý: 0.252 ms","timestamp":"2026-03-13 03:59:37","type":"HTTP_METRICS"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 04:00:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 04:00:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 04:15:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 04:15:00"}
+{"level":"info","message":"GET /api/movies - Trạng thái 404 - Thời gian xử lý: 0.742 ms","timestamp":"2026-03-13 04:44:13","type":"HTTP_METRICS"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 04:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 04:45:00"}
+{"level":"info","message":"GET /api/rooms/1 - Trạng thái 404 - Thời gian xử lý: 0.319 ms","timestamp":"2026-03-13 04:59:00","type":"HTTP_METRICS"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 05:00:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 05:00:00"}
+{"level":"info","message":"GET /api/movies - Trạng thái 404 - Thời gian xử lý: 0.233 ms","timestamp":"2026-03-13 05:00:14","type":"HTTP_METRICS"}
+{"level":"info","message":"GET /api/movies - Trạng thái 404 - Thời gian xử lý: 0.411 ms","timestamp":"2026-03-13 05:00:20","type":"HTTP_METRICS"}
+{"level":"info","message":"GET /api/movies - Trạng thái 404 - Thời gian xử lý: 0.281 ms","timestamp":"2026-03-13 05:04:04","type":"HTTP_METRICS"}
+{"level":"info","message":"GET /api/movies - Trạng thái 404 - Thời gian xử lý: 0.335 ms","timestamp":"2026-03-13 05:05:09","type":"HTTP_METRICS"}
+{"level":"info","message":"GET /api/movies - Trạng thái 404 - Thời gian xử lý: 0.322 ms","timestamp":"2026-03-13 05:07:15","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/payments/sepay-webhook - Trạng thái 404 - Thời gian xử lý: 0.305 ms","timestamp":"2026-03-13 05:08:00","type":"HTTP_METRICS"}
+{"level":"info","message":"PUT /api/admin/shows/1 - Trạng thái 404 - Thời gian xử lý: 0.278 ms","timestamp":"2026-03-13 05:08:12","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/movies - Trạng thái 404 - Thời gian xử lý: 0.477 ms","timestamp":"2026-03-13 05:08:16","type":"HTTP_METRICS"}
+{"level":"info","message":"GET /api/movies - Trạng thái 404 - Thời gian xử lý: 0.224 ms","timestamp":"2026-03-13 05:09:24","type":"HTTP_METRICS"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 07:15:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 07:15:00"}
+{"level":"info","message":"POST /api/bookings/hold - Trạng thái 404 - Thời gian xử lý: 0.969 ms","timestamp":"2026-03-13 07:20:19","type":"HTTP_METRICS"}
+{"level":"info","message":"GET /api/movies - Trạng thái 404 - Thời gian xử lý: 1.087 ms","timestamp":"2026-03-13 07:23:43","type":"HTTP_METRICS"}
+{"level":"info","message":"GET /api/movies - Trạng thái 404 - Thời gian xử lý: 0.230 ms","timestamp":"2026-03-13 07:23:43","type":"HTTP_METRICS"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 07:30:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 07:30:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 07:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 07:45:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 08:00:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 08:00:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 08:15:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 08:15:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 08:30:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 08:30:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 08:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 08:45:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 09:00:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 09:00:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 09:15:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 09:15:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 09:30:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 09:30:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 09:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 09:45:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 10:00:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 10:00:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 10:15:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 10:15:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 10:30:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 10:30:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 10:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 10:45:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 11:00:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 11:00:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 11:15:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 11:15:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 11:30:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 11:30:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 11:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 11:45:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 12:00:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 12:00:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 12:15:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 12:15:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 12:30:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 12:30:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 12:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 12:45:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 13:00:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 13:00:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 13:15:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 13:15:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 13:30:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 13:30:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 13:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 13:45:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 14:00:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 14:00:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 14:15:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 14:15:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 14:30:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 14:30:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 14:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 14:45:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 15:00:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 15:00:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 15:15:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 15:15:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 15:30:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 15:30:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 15:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 15:45:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 16:00:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 16:00:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 16:15:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 16:15:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 16:30:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 16:30:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 16:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 16:45:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 17:00:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 17:00:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 17:15:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 17:15:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-13 17:30:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-13 17:30:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-14 13:45:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-14 06:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-14 06:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-14 13:45:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-14 07:00:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-14 07:00:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-14 14:00:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-14 14:00:00"}
+<<<<<<< Updated upstream
+=======
+{"level":"info","message":"POST /api/wallet/sepay-webhook - Trạng thái 404 - Thời gian xử lý: 0.789 ms","timestamp":"2026-03-15 17:19:54","type":"HTTP_METRICS"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-15 17:30:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-16 00:30:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-15 17:30:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-16 00:30:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-16 00:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-16 00:45:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-15 17:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-15 17:45:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-15 18:00:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-15 18:00:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-15 18:15:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-15 18:15:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-15 18:30:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-16 01:30:01"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-15 18:30:02"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-16 01:30:02"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-16 03:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-16 03:45:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-16 04:00:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-16 04:00:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-16 04:15:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-16 04:15:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 02:15:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-16 19:15:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 02:15:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-16 19:15:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-16 19:30:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-16 19:30:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 02:30:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 02:30:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-16 19:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-16 19:45:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 02:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 02:45:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-16 20:00:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-16 20:00:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 03:00:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 03:00:00"}
+{"level":"info","message":"GET /api/voucher/test-nhan-pham - Trạng thái 404 - Thời gian xử lý: 1.030 ms","timestamp":"2026-03-16 20:00:02","type":"HTTP_METRICS"}
+{"level":"info","message":"GET /api/voucher/test-nhan-pham - Trạng thái 404 - Thời gian xử lý: 0.387 ms","timestamp":"2026-03-16 20:00:09","type":"HTTP_METRICS"}
+{"level":"info","message":"GET /favicon.ico - Trạng thái 404 - Thời gian xử lý: 0.331 ms","timestamp":"2026-03-16 20:00:09","type":"HTTP_METRICS"}
+{"level":"info","message":"GET /api/voucher/create - Trạng thái 404 - Thời gian xử lý: 0.533 ms","timestamp":"2026-03-16 20:00:32","type":"HTTP_METRICS"}
+{"level":"info","message":"GET /.well-known/appspecific/com.chrome.devtools.json - Trạng thái 404 - Thời gian xử lý: 0.276 ms","timestamp":"2026-03-16 20:00:37","type":"HTTP_METRICS"}
+{"level":"info","message":"GET /api/voucher/create - Trạng thái 404 - Thời gian xử lý: 0.295 ms","timestamp":"2026-03-16 20:00:43","type":"HTTP_METRICS"}
+{"level":"info","message":"GET /.well-known/appspecific/com.chrome.devtools.json - Trạng thái 404 - Thời gian xử lý: 0.375 ms","timestamp":"2026-03-16 20:00:43","type":"HTTP_METRICS"}
+{"level":"info","message":"GET /api/voucher/create - Trạng thái 404 - Thời gian xử lý: 0.260 ms","timestamp":"2026-03-16 20:00:44","type":"HTTP_METRICS"}
+{"level":"info","message":"GET /.well-known/appspecific/com.chrome.devtools.json - Trạng thái 404 - Thời gian xử lý: 0.240 ms","timestamp":"2026-03-16 20:00:44","type":"HTTP_METRICS"}
+{"level":"info","message":"GET /api/voucher/create - Trạng thái 404 - Thời gian xử lý: 0.197 ms","timestamp":"2026-03-16 20:00:44","type":"HTTP_METRICS"}
+{"level":"info","message":"GET /.well-known/appspecific/com.chrome.devtools.json - Trạng thái 404 - Thời gian xử lý: 0.249 ms","timestamp":"2026-03-16 20:00:44","type":"HTTP_METRICS"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 07:00:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 14:00:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 07:00:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 14:00:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 14:15:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 14:15:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 07:15:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 07:15:00"}
+>>>>>>> Stashed changes
+{"level":"info","message":"POST /api/voucher/create - Trạng thái 404 - Thời gian xử lý: 4.776 ms","timestamp":"2026-03-17 10:35:01","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/voucher/create - Trạng thái 404 - Thời gian xử lý: 0.353 ms","timestamp":"2026-03-17 10:35:20","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/voucher/create - Trạng thái 404 - Thời gian xử lý: 0.246 ms","timestamp":"2026-03-17 10:35:29","type":"HTTP_METRICS"}
+{"level":"info","message":"GET /api/voucher/test-nhan-pham - Trạng thái 404 - Thời gian xử lý: 0.719 ms","timestamp":"2026-03-17 10:38:16","type":"HTTP_METRICS"}
+{"level":"info","message":"GET /api/voucher/test-nhan-pham - Trạng thái 404 - Thời gian xử lý: 1.497 ms","timestamp":"2026-03-17 10:39:25","type":"HTTP_METRICS"}
+{"level":"info","message":"POST /api/voucher/create - Trạng thái 404 - Thời gian xử lý: 0.338 ms","timestamp":"2026-03-17 10:39:29","type":"HTTP_METRICS"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 10:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 10:45:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 11:15:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 11:15:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 11:30:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 11:30:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 11:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 11:45:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 12:00:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 12:00:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 12:15:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 12:15:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 12:30:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 12:30:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 12:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 12:45:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 13:00:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 13:00:00"}
+{"level":"info","message":"GET /api/bookings/17/pay - Trạng thái 404 - Thời gian xử lý: 0.454 ms","timestamp":"2026-03-17 13:06:44","type":"HTTP_METRICS"}
+{"level":"info","message":"GET /api/bookings/17/pay - Trạng thái 404 - Thời gian xử lý: 1.387 ms","timestamp":"2026-03-17 13:07:06","type":"HTTP_METRICS"}
+{"level":"info","message":"GET /api/auth/login - Trạng thái 404 - Thời gian xử lý: 1.251 ms","timestamp":"2026-03-17 13:11:36","type":"HTTP_METRICS"}
+{"level":"info","message":"GET /api/bookings/17/pay - Trạng thái 404 - Thời gian xử lý: 0.218 ms","timestamp":"2026-03-17 13:11:50","type":"HTTP_METRICS"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 13:15:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 13:15:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 13:30:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 13:30:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 13:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 13:45:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 14:00:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 14:00:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 14:15:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 14:15:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 14:30:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 14:30:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 14:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 14:45:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 15:00:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 15:00:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 15:15:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 15:15:00"}
+{"level":"info","message":"DELETE /api/bookings/19/cancel - Trạng thái 404 - Thời gian xử lý: 6.832 ms","timestamp":"2026-03-17 15:23:45","type":"HTTP_METRICS"}
+{"action":"DELETE_BOOKING_ERROR","actor_id":3,"level":"error","message":"Lỗi khi hủy sân: insert into \"transactions\" (\"booking_id\", \"status\", \"transfer_amount\", \"user_id\") values ($1, $2, $3, $4) - column \"booking_id\" of relation \"transactions\" does not exist","target_booking_id":"19","timestamp":"2026-03-17 15:24:37"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 15:30:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 15:30:00"}
+{"action":"DELETE_BOOKING_ERROR","actor_id":3,"level":"error","message":"Lỗi khi hủy sân: insert into \"transactions\" (\"status\", \"transfer_amount\", \"user_id\") values ($1, $2, $3) - column \"status\" of relation \"transactions\" does not exist","target_booking_id":"19","timestamp":"2026-03-17 15:32:53"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 15:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 15:45:00"}
+{"action":"DELETE_BOOKING_ERROR","actor_id":3,"level":"error","message":"Lỗi khi hủy sân: insert into \"transactions\" (\"status\", \"transfer_amount\", \"user_id\") values ($1, $2, $3) - null value in column \"gateway_transaction_id\" of relation \"transactions\" violates not-null constraint","target_booking_id":"19","timestamp":"2026-03-17 15:47:53"}
+{"action":"DELETE_BOOKING","actor_id":3,"actor_name":"khach1","level":"info","message":"Hành động hủy sân được thực hiện","target_booking_id":"19","time":"2026-03-17T15:51:25.127Z","timestamp":"2026-03-17 15:51:25"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 16:30:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 16:30:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 16:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 16:45:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 17:00:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 17:00:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 17:15:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 17:15:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 17:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 17:45:00"}
+{"action":"DELETE_BOOKING_ERROR","actor_id":3,"level":"error","message":"Lỗi khi hủy sân: Đơn này đã được hủy từ trước rồi!","target_booking_id":"19","timestamp":"2026-03-17 17:55:48"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 18:00:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 18:00:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 18:15:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 18:15:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 18:30:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 18:30:00"}
+{"level":"info","message":"[CRON JOB] Bắt đầu kiểm tra và cập nhật trạng thái sân...","timestamp":"2026-03-17 18:45:00"}
+{"level":"info","message":"[CRON JOB] Không có sân nào cần cập nhật lúc này.","timestamp":"2026-03-17 18:45:00"}
