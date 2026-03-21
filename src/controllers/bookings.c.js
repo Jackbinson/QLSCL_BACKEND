@@ -1,34 +1,33 @@
 const bookingService = require('../services/bookings.s');
-const logger = require('../utils/logger'); 
+const logger = require('../utils/logger');
 
-// Kiểm tra sân thực tế 
+// Kiem tra san thuc te
 const checkoutBooking = async (req, res) => {
-    try {
-        const { id } = req.params; 
-        const { actual_end_time } = req.body; 
+  try {
+    const { id } = req.params;
+    const { actual_end_time } = req.body;
 
-        if (!actual_end_time) {
-            return res.status(400).json({ success: false, message: 'Vui lòng cung cấp giờ trả sân thực tế!' });
-        }
-
-        const result = await bookingService.checkoutBooking(id, actual_end_time);
-        return res.status(200).json({ success: true, data: result });
-        
-    } catch (error) {
-        return res.status(500).json({ success: false, message: error.message });
+    if (!actual_end_time) {
+      return res.status(400).json({ success: false, message: 'Vui long cung cap gio tra san thuc te!' });
     }
+
+    const result = await bookingService.checkoutBooking(id, actual_end_time);
+    return res.status(200).json({ success: true, data: result });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
 };
 
-// Đặt sân
+// Dat san
 const createBooking = async (req, res) => {
   try {
-    const { user_id, username } = req.user; 
+    const { user_id, username } = req.user;
     const { court_id, booking_date, start_time, end_time } = req.body;
 
     if (!court_id || !booking_date || !start_time || !end_time) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Vui lòng cung cấp đầy đủ thông tin: Sân, ngày và khung giờ đặt!' 
+      return res.status(400).json({
+        success: false,
+        message: 'Vui long cung cap day du thong tin: San, ngay va khung gio dat!'
       });
     }
 
@@ -41,67 +40,100 @@ const createBooking = async (req, res) => {
       end_time
     });
 
-    return res.status(201).json({ 
-      success: true, 
-      message: 'Đặt sân thành công!', 
-      booking_id: result.id 
+    return res.status(201).json({
+      success: true,
+      message: 'Dat san thanh cong!',
+      booking_id: result.id
     });
   } catch (error) {
-    return res.status(409).json({ 
-      success: false, 
-      message: error.message 
+    return res.status(409).json({
+      success: false,
+      message: error.message
     });
   }
 };
-// Lấy lịch sử đặt sân
+
+// Lay lich su dat san
 const getUserBookings = async (req, res) => {
   try {
-    const user_id = req.user.user_id; 
+    const user_id = req.user.user_id;
     const bookings = await bookingService.getUserBookings(user_id);
-    
-    return res.status(200).json({ 
-      success: true, 
-      data: bookings 
+
+    return res.status(200).json({
+      success: true,
+      data: bookings
     });
   } catch (error) {
-    return res.status(500).json({ 
-      success: false, 
-      message: 'Lỗi khi tải lịch sử: ' + error.message 
+    return res.status(500).json({
+      success: false,
+      message: 'Loi khi tai lich su: ' + error.message
     });
   }
 };
-// Kiểm tra sân được còn dùng
+
+// Kiem tra san duoc con dung
 const checkAvailability = async (req, res) => {
   try {
     const { date, time } = req.query;
     if (!date || !time) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Jack ơi, bạn cần cung cấp đủ ngày và giờ để mình tìm sân giúp nhé!' 
+      return res.status(400).json({
+        success: false,
+        message: 'Jack oi, ban can cung cap du ngay va gio de minh tim san giup nhe!'
       });
     }
 
     const courts = await bookingService.checkAvailability(date, time);
-    return res.status(200).json({ 
-      success: true, 
-      data: courts 
+    return res.status(200).json({
+      success: true,
+      data: courts
     });
   } catch (error) {
-    return res.status(500).json({ 
-      success: false, 
-      message: error.message 
+    return res.status(500).json({
+      success: false,
+      message: error.message
     });
   }
 };
-// Hủy đặt sân 
+
+// FE-03.1 Live Calendar
+const getLiveCalendar = async (req, res) => {
+  try {
+    const { start_date, court_id } = req.query;
+
+    if (!start_date) {
+      return res.status(400).json({
+        success: false,
+        message: 'Vui long cung cap start_date de he thong tai lich trong tuan!'
+      });
+    }
+
+    const calendar = await bookingService.getLiveCalendar({
+      start_date,
+      court_id
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Lay du lieu live calendar thanh cong!',
+      data: calendar
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+// Huy dat san
 const cancelBooking = async (req, res) => {
   try {
-    const { booking_id } = req.params; 
-    const { user_id, username } = req.user; 
+    const { booking_id } = req.params;
+    const { user_id, username } = req.user;
     const result = await bookingService.cancelBooking(booking_id, user_id);
-    
+
     logger.info({
-      message: 'Hành động hủy sân được thực hiện',
+      message: 'Hanh dong huy san duoc thuc hien',
       action: 'DELETE_BOOKING',
       actor_id: user_id,
       actor_name: username,
@@ -109,43 +141,42 @@ const cancelBooking = async (req, res) => {
       time: new Date().toISOString()
     });
 
-    return res.status(200).json({ 
-      success: true, 
-      message: `Hủy lịch đặt sân thành công! ${result.message}`, 
+    return res.status(200).json({
+      success: true,
+      message: `Huy lich dat san thanh cong! ${result.message}`,
       data: result
     });
-
   } catch (error) {
     logger.error({
-        message: `Lỗi khi hủy sân: ${error.message}`,
-        action: 'DELETE_BOOKING_ERROR',
-        actor_id: req.user?.user_id,
-        target_booking_id: req.params?.booking_id
+      message: `Loi khi huy san: ${error.message}`,
+      action: 'DELETE_BOOKING_ERROR',
+      actor_id: req.user?.user_id,
+      target_booking_id: req.params?.booking_id
     });
 
-    return res.status(400).json({ 
-      success: false, 
-      message: error.message 
+    return res.status(400).json({
+      success: false,
+      message: error.message
     });
   }
 };
 
-// Thanh toán tại quầy
-const payAtCounter = async (req,res)  => {
-  try { 
-    const {id} = req.params;
-    const {cash_received} = req.body;
-    if (!cash_received) { 
+// Thanh toan tai quay
+const payAtCounter = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { cash_received } = req.body;
+    if (!cash_received) {
       return res.status(400).json({
-        success: false, 
-        message: 'Vui lòng nhập số tiền khách đưa!'
+        success: false,
+        message: 'Vui long nhap so tien khach dua!'
       });
     }
     const result = await bookingService.payAtCounter(id, cash_received);
     return res.status(200).json({
       success: true,
       data: result
-    })
+    });
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -157,18 +188,18 @@ const payAtCounter = async (req,res)  => {
 const getShiftReport = async (req, res) => {
   try {
     const { start_time, end_time } = req.query;
-    if (!start_time || !end_time) { 
+    if (!start_time || !end_time) {
       return res.status(400).json({
         success: false,
-        message: 'Vui lòng cung cấp đầy đủ cả start_time và end_time!'
+        message: 'Vui long cung cap day du ca start_time va end_time!'
       });
     }
 
     const report = await bookingService.getShiftRevenue(start_time, end_time);
-    
+
     return res.status(200).json({
       success: true,
-      message: 'Xuất báo cáo doanh thu thành công!',
+      message: 'Xuat bao cao doanh thu thanh cong!',
       data: report
     });
   } catch (error) {
@@ -179,27 +210,27 @@ const getShiftReport = async (req, res) => {
   }
 };
 
-// 4. Bổ sung hàm Báo cáo lỗi (FE-04.7) bị thiếu nè!
 const getErrorReport = async (req, res) => {
   try {
-      const errors = await bookingService.getFailedTransactions();
-      return res.status(200).json({
-          success: true,
-          message: 'Danh sách giao dịch lỗi cần xử lý',
-          data: errors
-      });
+    const errors = await bookingService.getFailedTransactions();
+    return res.status(200).json({
+      success: true,
+      message: 'Danh sach giao dich loi can xu ly',
+      data: errors
+    });
   } catch (error) {
-      return res.status(500).json({ success: false, message: error.message });
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
 
 module.exports = {
-    createBooking, 
-    getUserBookings,
-    cancelBooking,
-    checkAvailability,
-    checkoutBooking,
-    payAtCounter,
-    getShiftReport,
-    getErrorReport
+  createBooking,
+  getUserBookings,
+  cancelBooking,
+  checkAvailability,
+  getLiveCalendar,
+  checkoutBooking,
+  payAtCounter,
+  getShiftReport,
+  getErrorReport
 };

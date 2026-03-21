@@ -295,6 +295,126 @@ const getFailedTransactions = async () => {
         .orderBy('created_at', 'desc');
 };
 
+const formatDateOnly = (date) => {
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
+
+const parseTimeToHours = (timeStr) => {
+    const [hours, minutes = 0, seconds = 0] = timeStr.split(':').map(Number);
+    return hours + (minutes / 60) + (seconds / 3600);
+};
+
+// FE-03.1 Live Calendar
+const getLiveCalendar = async ({ start_date, court_id }) => {
+    const startDate = new Date(`${start_date}T00:00:00.000Z`);
+
+    if (Number.isNaN(startDate.getTime())) {
+        throw new Error('start_date khong hop le. Vui long dung dinh dang YYYY-MM-DD!');
+    }
+
+    const endDate = new Date(startDate);
+    endDate.setUTCDate(endDate.getUTCDate() + 6);
+
+    const weekDates = [];
+    for (let i = 0; i < 7; i++) {
+        const current = new Date(startDate);
+        current.setUTCDate(startDate.getUTCDate() + i);
+        weekDates.push(formatDateOnly(current));
+    }
+
+    let courtsQuery = db('Courts')
+        .select('id', 'name', 'type', 'status', 'price_per_hour')
+        .orderBy('id', 'asc');
+
+    if (court_id) {
+        courtsQuery = courtsQuery.where({ id: court_id });
+    }
+
+    const courts = await courtsQuery;
+    if (courts.length === 0) {
+        throw new Error('Khong tim thay san phu hop de hien thi live calendar!');
+    }
+
+    let bookingsQuery = db('Bookings')
+        .join('Courts', 'Bookings.court_id', 'Courts.id')
+        .select(
+            'Bookings.id',
+            'Bookings.court_id',
+            'Bookings.booking_date',
+            'Bookings.start_time',
+            'Bookings.end_time',
+            'Bookings.status',
+            'Bookings.total_price',
+            'Courts.name as court_name',
+            'Courts.type as court_type'
+        )
+        .whereBetween('Bookings.booking_date', [formatDateOnly(startDate), formatDateOnly(endDate)])
+        .whereIn('Bookings.status', ['Pending', 'Partially Paid', 'Fully Paid', 'Active'])
+        .orderBy([{ column: 'Bookings.booking_date', order: 'asc' }, { column: 'Bookings.start_time', order: 'asc' }]);
+
+    if (court_id) {
+        bookingsQuery = bookingsQuery.where('Bookings.court_id', court_id);
+    }
+
+    const bookings = await bookingsQuery;
+
+    const calendarByCourt = courts.map((court) => {
+        const days = weekDates.map((date) => {
+            const dayBookings = bookings
+                .filter((booking) => Number(booking.court_id) === Number(court.id) && booking.booking_date === date)
+                .map((booking) => {
+                    const bookedHours = parseTimeToHours(booking.end_time) - parseTimeToHours(booking.start_time);
+
+                    return {
+                        booking_id: booking.id,
+                        start_time: booking.start_time,
+                        end_time: booking.end_time,
+                        status: booking.status,
+                        total_price: Number(booking.total_price || 0),
+                        booked_hours: Number(bookedHours.toFixed(2))
+                    };
+                });
+
+            const bookedHours = dayBookings.reduce((sum, item) => sum + item.booked_hours, 0);
+
+            return {
+                date,
+                booking_count: dayBookings.length,
+                booked_hours: Number(bookedHours.toFixed(2)),
+                coverage_percent: Number(((bookedHours / 24) * 100).toFixed(2)),
+                bookings: dayBookings
+            };
+        });
+
+        const weeklyBookedHours = days.reduce((sum, day) => sum + day.booked_hours, 0);
+        const weeklyBookingCount = days.reduce((sum, day) => sum + day.booking_count, 0);
+
+        return {
+            court_id: court.id,
+            court_name: court.name,
+            court_type: court.type,
+            court_status: court.status,
+            week_summary: {
+                booking_count: weeklyBookingCount,
+                booked_hours: Number(weeklyBookedHours.toFixed(2)),
+                coverage_percent: Number(((weeklyBookedHours / (24 * 7)) * 100).toFixed(2))
+            },
+            days
+        };
+    });
+
+    return {
+        start_date: formatDateOnly(startDate),
+        end_date: formatDateOnly(endDate),
+        total_courts: courts.length,
+        total_bookings: bookings.length,
+        calendar: calendarByCourt
+    };
+};
+
 module.exports = {
     createBooking,
     getUserBookings,
@@ -304,5 +424,6 @@ module.exports = {
     checkoutBooking,
     payAtCounter,
     getShiftRevenue,
-    getFailedTransactions
+    getFailedTransactions,
+    getLiveCalendar
 };
