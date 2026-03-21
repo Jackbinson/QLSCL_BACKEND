@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
 const courtService = require('../services/courts.s');
+const { start } = require('repl');
 
 // 1. Lay danh sach san
 const getCourts = async (req, res) => {
@@ -96,9 +97,39 @@ const updateCourtType = async (req, res) => {
     }
 };
 
+const searchAvailableCourts = async (req,res) => {
+    try {
+        const {date,start_time,end_time,type} = req.query;
+        if (!date || !start_time || !end_time) {
+            return res.status(400).json({
+                success: false,
+                message: 'Vui lòng cung cấp ngày và khung giờ bạn muốn chơi!'
+            });
+        }
+        const availableCourts = await courtService.searchAvailableCourts({
+            date,
+            start_time,
+            end_time,
+            type
+        });
+        res.json({
+            success: true,
+            message: `Tìm thấy ${availableCourts.length} sân trống.`,
+            data: availableCourts
+        });
+    } catch (error) { 
+        console.error(error);
+        res.status(500).json({
+            success: false,
+            message: 'Lỗi server khi tìm kiếm dữ liệu sân'
+        })
+    };
+}
+
 module.exports = {
     getCourts,
     createCourt,
     updateCourtImage,
-    updateCourtType
+    updateCourtType,
+    searchAvailableCourts
 };

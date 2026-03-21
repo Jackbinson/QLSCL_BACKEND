@@ -51,7 +51,20 @@ const createBooking = async (data) => {
         // 1. KIỂM TRA SÂN
         const court = await trx('Courts').where({ id: court_id, status: 'Active' }).first();
         if (!court) throw new Error('Sân không khả dụng hoặc đang bảo trì!');
-
+        // Thêm phần kiểm tra lịch bảo trì 
+        const maintenance = await trx('CourtMaintenances')
+            .where({court_id,
+                maintenance_date: booking_date
+            })
+            .whereIn('status',['Scheduled', 'In Progress'])
+            .andWhere(function() {
+                this.where('start_time', '<', end_time)
+                .andWhere('end_time', '>', start_time);
+            })
+            .first();
+        if (maintenance) { 
+            throw new Error(`Hiện tại sân đang có lịch bảo trì từ ${maintenance.start_time} đến ${maintenance.end_time} (Lý do: ${maintenance.reason}). Vui lòng chọn khung giờ khác và cám ơn quý khách!`);
+        }
         const overlapping = await trx('Bookings')
             .where({ court_id, booking_date })
             .whereIn('status', ['Pending', 'Partially Paid', 'Fully Paid', 'Active'])
@@ -197,7 +210,18 @@ const checkAvailability = async (date, time) => {
         .where({ booking_date: date, start_time: time })
         .whereNot('status', 'Cancelled')
         .pluck('court_id');
-    return await db('Courts').where({ status: 'Active' }).whereNotIn('id', booked);
+    const maintenanceCourtIds = await db('CourtMaintenances')
+        .where({ maintenance_date: date })
+        .whereIn('status', ['Scheduled', 'In Progress'])
+        .andWhere(function() {
+            this.where('start_time', '<=', time)
+                .andWhere('end_time', '>', time);
+        })
+        .pluck('court_id');
+    return await db('Courts')
+        .where({ status: 'Active' })
+        .whereNotIn('id', booked)
+        .whereNotIn('id', maintenanceCourtIds);
 };
 
 // 5. Cập nhật trạng thái tự động 

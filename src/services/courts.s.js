@@ -104,12 +104,56 @@ const updateCourtType = async (courtId, type) => {
 
     return await db('Courts').where({ id: courtId }).first();
 };
+// TÌM KIẾM NÂNG CAO
+const searchAvailableCourts = async (filters) => {
+    const { date, start_time, end_time, type } = filters;
 
+    // 1. TÌM CÁC SÂN ĐANG CÓ NGƯỜI ĐẶT
+    const bookedCourts = await db('Bookings')
+        .select('court_id')
+        .where('booking_date', date)
+        .whereIn('status', ['Pending', 'Partially Paid', 'Fully Paid', 'Active'])
+        .andWhere(function() {
+            this.where('start_time', '<', end_time)
+                .andWhere('end_time', '>', start_time);
+        });
+
+    // 2. TÌM CÁC SÂN ĐANG BẢO TRÌ 
+    const maintenanceCourts = await db('CourtMaintenances')
+        .select('court_id')
+        .where('maintenance_date', date)
+        .whereIn('status', ['Scheduled', 'In Progress'])
+        .andWhere(function() {
+            this.where('start_time', '<', end_time)
+                .andWhere('end_time', '>', start_time);
+        });
+
+    const busyCourtIds = [
+        ...bookedCourts.map(b => b.court_id),
+        ...maintenanceCourts.map(m => m.court_id)
+    ];
+    const uniqueBusyIds = [...new Set(busyCourtIds)];
+
+    // 3. LẤY DANH SÁCH SÂN TRỐNG 
+    let query = db('Courts')
+        .leftJoin('CourtImages', 'Courts.id', 'CourtImages.court_id')
+        .select('Courts.*', 'CourtImages.image_url')
+        .where('Courts.status', 'Active'); 
+    if (type) {
+        query.where('Courts.type', type);
+    }
+    if (uniqueBusyIds.length > 0) {
+        query.whereNotIn('Courts.id', uniqueBusyIds);
+    }
+
+    return await query;
+};
 module.exports = {
     getAllCourts,
     addCourt,
     getCourtById,
     updateCourtStatus,
     updateImageUrl,
-    updateCourtType
+    updateCourtType,
+    searchAvailableCourts
 };
