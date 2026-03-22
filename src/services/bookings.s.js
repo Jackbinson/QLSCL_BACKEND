@@ -259,6 +259,30 @@ const getCancellationRefundInfo = (booking) => {
     };
 };
 
+const getBookingHistoryStatus = (booking) => {
+    if (booking.status === 'Cancelled') {
+        return {
+            code: 'cancelled',
+            label: 'Da huy'
+        };
+    }
+
+    const bookingStartDateTime = getBookingStartDateTime(booking);
+    const now = new Date();
+
+    if (bookingStartDateTime > now) {
+        return {
+            code: 'upcoming',
+            label: 'Sap toi'
+        };
+    }
+
+    return {
+        code: 'completed',
+        label: 'Da choi'
+    };
+};
+
 const checkBookingOverlap = async (data) => {
     const { court_id, booking_date, start_time, end_time, start_date, end_date, weekdays } = data;
 
@@ -444,11 +468,21 @@ const createRecurringBooking = async (data) => {
 
 // 2. Lay lich su dat san
 const getUserBookings = async (userId) => {
-    return await db('Bookings')
+    const bookings = await db('Bookings')
         .join('Courts', 'Bookings.court_id', 'Courts.id')
         .where('Bookings.user_id', userId)
         .select('Bookings.*', 'Courts.name as court_name')
         .orderBy('booking_date', 'desc');
+
+    return bookings.map((booking) => {
+        const historyStatus = getBookingHistoryStatus(booking);
+
+        return {
+            ...booking,
+            display_status: historyStatus.code,
+            display_status_label: historyStatus.label
+        };
+    });
 };
 
 // 3. Huy lich dat san
