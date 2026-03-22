@@ -1,8 +1,30 @@
 const knexConfig = require('../../knexfile');
 const db = require('knex')(knexConfig.development || knexConfig);
-
+const { checkTimeOverlap } = require('../utils/booking.helper');
 const PENALTY_RATE_PER_MINUTE = 2000;
 const GRACE_PERIOD_MINUTES = 5;
+const RECURRING_WEEKDAY_MAP = {
+    CN: 0,
+    SUN: 0,
+    T2: 1,
+    MON: 1,
+    T3: 2,
+    TUE: 2,
+    T4: 3,
+    WED: 3,
+    T5: 4,
+    THU: 4,
+    T6: 5,
+    FRI: 5,
+    T7: 6,
+    SAT: 6
+};
+const CANCELLATION_POLICY_RULES = [
+    { min_hours: 48, refund_ratio: 1 },
+    { min_hours: 24, refund_ratio: 0.5 },
+    { min_hours: 12, refund_ratio: 0.25 },
+    { min_hours: 0, refund_ratio: 0 }
+];
 
 const checkoutBooking = async (bookingId, actualEndTimeStr) => {
     const booking = await db('Bookings').where({ id: bookingId }).first();
@@ -43,6 +65,262 @@ const checkoutBooking = async (bookingId, actualEndTimeStr) => {
     };
 };
 
+const normalizeRecurringWeekdays = (weekdays) => {
+    const rawWeekdays = Array.isArray(weekdays) ? weekdays : [weekdays];
+    const normalized = rawWeekdays.map((item) => {
+        if (typeof item === 'number') {
+            if (item < 0 || item > 6) {
+                throw new Error('Thu trong tuan khong hop le!');
+            }
+            return item;
+        }
+
+        const key = String(item).trim().toUpperCase();
+        if (Object.prototype.hasOwnProperty.call(RECURRING_WEEKDAY_MAP, key)) {
+            return RECURRING_WEEKDAY_MAP[key];
+        }
+
+        if (/^\d+$/.test(key)) {
+            const numericDay = Number(key);
+            if (numericDay >= 0 && numericDay <= 6) {
+                return numericDay;
+            }
+        }
+
+        throw new Error(`Thu trong tuan khong hop le: ${item}`);
+    });
+
+    return [...new Set(normalized)].sort((a, b) => a - b);
+};
+
+const generateRecurringDates = (startDateStr, endDateStr, weekdays) => {
+    const startDate = new Date(`${startDateStr}T00:00:00.000Z`);
+    const endDate = new Date(`${endDateStr}T00:00:00.000Z`);
+
+    if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
+        throw new Error('Ngay bat dau hoac ngay ket thuc khong hop le!');
+    }
+
+    if (startDate > endDate) {
+        throw new Error('end_date phai lon hon hoac bang start_date!');
+    }
+
+    const recurringDates = [];
+    const cursor = new Date(startDate);
+
+    while (cursor <= endDate) {
+        if (weekdays.includes(cursor.getUTCDay())) {
+            recurringDates.push(formatDateOnly(cursor));
+        }
+        cursor.setUTCDate(cursor.getUTCDate() + 1);
+    }
+
+    if (recurringDates.length === 0) {
+        throw new Error('Khong co ngay nao phu hop voi bo thu da chon!');
+    }
+
+    return recurringDates;
+};
+
+const getHourlyPriceByStartTime = (basePrice, goldenRules, startTime) => {
+    const startHour = parseTimeToHours(startTime);
+    let appliedPricePerHour = basePrice;
+
+    for (const rule of goldenRules) {
+        const ruleStartH = parseTimeToHours(rule.start_time);
+        const ruleEndH = parseTimeToHours(rule.end_time);
+
+        if (startHour >= ruleStartH && startHour < ruleEndH) {
+            appliedPricePerHour = Number(rule.price);
+            break;
+        }
+    }
+
+    return appliedPricePerHour;
+};
+
+const formatTimeFromHours = (timeHours) => {
+    const hours = Math.floor(timeHours);
+    const minutes = Math.round((timeHours - hours) * 60);
+    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00`;
+};
+
+const calculatePriceForTimeRange = (basePrice, goldenRules, startTime, endTime) => {
+    const startHour = parseTimeToHours(startTime);
+    const endHour = parseTimeToHours(endTime);
+
+    if (endHour <= startHour) {
+        throw new Error('Gio ket thuc phai sau gio bat dau!');
+    }
+
+    const boundaries = new Set([startHour, endHour]);
+    for (const rule of goldenRules) {
+        const ruleStartHour = parseTimeToHours(rule.start_time);
+        const ruleEndHour = parseTimeToHours(rule.end_time);
+
+        if (ruleStartHour > startHour && ruleStartHour < endHour) {
+            boundaries.add(ruleStartHour);
+        }
+
+        if (ruleEndHour > startHour && ruleEndHour < endHour) {
+            boundaries.add(ruleEndHour);
+        }
+    }
+
+    const sortedBoundaries = [...boundaries].sort((a, b) => a - b);
+    let totalPrice = 0;
+
+    for (let index = 0; index < sortedBoundaries.length - 1; index += 1) {
+        const segmentStart = sortedBoundaries[index];
+        const segmentEnd = sortedBoundaries[index + 1];
+        const segmentDuration = segmentEnd - segmentStart;
+        const appliedPricePerHour = getHourlyPriceByStartTime(
+            basePrice,
+            goldenRules,
+            formatTimeFromHours(segmentStart)
+        );
+
+        totalPrice += appliedPricePerHour * segmentDuration;
+    }
+
+    return Number(totalPrice.toFixed(2));
+};
+
+const validateBookingWindow = ({ court_id, booking_date, start_time, end_time }) => {
+    if (!court_id || !booking_date || !start_time || !end_time) {
+        throw new Error('Vui long cung cap day du san, ngay dat va khung gio!');
+    }
+
+    const startHour = parseTimeToHours(start_time);
+    const endHour = parseTimeToHours(end_time);
+
+    if (Number.isNaN(startHour) || Number.isNaN(endHour)) {
+        throw new Error('Khung gio dat khong hop le!');
+    }
+
+    if (endHour <= startHour) {
+        throw new Error('Gio ket thuc phai sau gio bat dau!');
+    }
+};
+
+const buildConflictDetails = ({ booking_date, start_time, end_time, overlapCheck }) => {
+    if (!overlapCheck?.isOverlap) {
+        return null;
+    }
+
+    return {
+        booking_date,
+        start_time,
+        end_time,
+        conflict_type: overlapCheck.conflict_type,
+        message: overlapCheck.message
+    };
+};
+
+const getBookingStartDateTime = (booking) => {
+    const bookingDate = new Date(booking.booking_date);
+    const bookingDateString = bookingDate.toISOString().split('T')[0];
+    return new Date(`${bookingDateString}T${booking.start_time}`);
+};
+
+const getCancellationPolicy = (hoursUntilBooking) => {
+    for (const rule of CANCELLATION_POLICY_RULES) {
+        if (hoursUntilBooking >= rule.min_hours) {
+            return rule;
+        }
+    }
+
+    return CANCELLATION_POLICY_RULES[CANCELLATION_POLICY_RULES.length - 1];
+};
+
+const getCancellationRefundInfo = (booking) => {
+    const bookingStartDateTime = getBookingStartDateTime(booking);
+    const now = new Date();
+    const hoursUntilBooking = (bookingStartDateTime - now) / (1000 * 60 * 60);
+
+    if (hoursUntilBooking < 0) {
+        throw new Error('San da den gio hoac da qua gio choi, khong the huy!');
+    }
+
+    const matchedPolicy = getCancellationPolicy(hoursUntilBooking);
+    const paidAmount = Number(booking.total_price || 0);
+    const refundAmount = Number((paidAmount * matchedPolicy.refund_ratio).toFixed(2));
+
+    return {
+        hoursUntilBooking: Number(hoursUntilBooking.toFixed(2)),
+        refundRatioValue: matchedPolicy.refund_ratio,
+        refundRatioLabel: `${matchedPolicy.refund_ratio * 100}%`,
+        refundAmount,
+        bookingStartTime: bookingStartDateTime.toISOString(),
+        policyMatched: {
+            min_hours: matchedPolicy.min_hours,
+            refund_ratio: matchedPolicy.refund_ratio
+        }
+    };
+};
+
+const checkBookingOverlap = async (data) => {
+    const { court_id, booking_date, start_time, end_time, start_date, end_date, weekdays } = data;
+
+    return await db.transaction(async (trx) => {
+        const court = await trx('Courts').where({ id: court_id, status: 'Active' }).first();
+        if (!court) {
+            throw new Error('San khong kha dung hoac dang bao tri!');
+        }
+
+        if (booking_date) {
+            validateBookingWindow({ court_id, booking_date, start_time, end_time });
+            const overlapCheck = await checkTimeOverlap(trx, court_id, booking_date, start_time, end_time);
+
+            return {
+                can_book: !overlapCheck.isOverlap,
+                court_id,
+                booking_date,
+                start_time,
+                end_time,
+                conflicts: overlapCheck.isOverlap
+                    ? [buildConflictDetails({ booking_date, start_time, end_time, overlapCheck })]
+                    : []
+            };
+        }
+
+        const normalizedWeekdays = normalizeRecurringWeekdays(weekdays);
+        const recurringDates = generateRecurringDates(start_date, end_date, normalizedWeekdays);
+        const conflicts = [];
+
+        validateBookingWindow({
+            court_id,
+            booking_date: recurringDates[0],
+            start_time,
+            end_time
+        });
+
+        for (const currentDate of recurringDates) {
+            const overlapCheck = await checkTimeOverlap(trx, court_id, currentDate, start_time, end_time);
+            if (overlapCheck.isOverlap) {
+                conflicts.push(buildConflictDetails({
+                    booking_date: currentDate,
+                    start_time,
+                    end_time,
+                    overlapCheck
+                }));
+            }
+        }
+
+        return {
+            can_book: conflicts.length === 0,
+            court_id,
+            start_date,
+            end_date,
+            weekdays: normalizedWeekdays,
+            start_time,
+            end_time,
+            checked_dates: recurringDates,
+            conflicts
+        };
+    });
+};
+
 // 1. Chuc nang Dat san
 const createBooking = async (data) => {
     const { user_id, username, court_id, booking_date, start_time, end_time } = data;
@@ -50,19 +328,9 @@ const createBooking = async (data) => {
     return await db.transaction(async (trx) => {
         const court = await trx('Courts').where({ id: court_id, status: 'Active' }).first();
         if (!court) throw new Error('San khong kha dung hoac dang bao tri!');
-
-        const overlapping = await trx('Bookings')
-            .where({ court_id, booking_date })
-            .whereIn('status', ['Pending', 'Partially Paid', 'Fully Paid', 'Active'])
-            .andWhere(function () {
-                this.where('start_time', '<', end_time)
-                    .andWhere('end_time', '>', start_time);
-            })
-            .first();
-
-        if (overlapping) {
-            throw new Error(`Rat tiec, san nay da duoc dat vao khung gio nay roi. ${username || 'Ban'} vui long chon gio khac nhe!`);
-        }
+        validateBookingWindow({ court_id, booking_date, start_time, end_time });
+        const overlapCheck = await checkTimeOverlap(trx, court_id, booking_date, start_time, end_time);
+        if (overlapCheck.isOverlap) throw new Error(overlapCheck.message);
 
         const getHours = (timeStr) => {
             const [hours, minutes] = timeStr.split(':').map(Number);
@@ -76,19 +344,7 @@ const createBooking = async (data) => {
         if (duration <= 0) throw new Error('Gio ket thuc phai sau gio bat dau!');
 
         const goldenRules = await trx('CourtPrices').where({ court_id });
-        let appliedPricePerHour = court.price_per_hour;
-
-        for (const rule of goldenRules) {
-            const ruleStartH = getHours(rule.start_time);
-            const ruleEndH = getHours(rule.end_time);
-
-            if (startH >= ruleStartH && startH < ruleEndH) {
-                appliedPricePerHour = rule.price;
-                break;
-            }
-        }
-
-        const total_price = appliedPricePerHour * duration;
+        const total_price = calculatePriceForTimeRange(court.price_per_hour, goldenRules, start_time, end_time);
 
         const user = await trx('Users').where({ id: user_id }).first();
         if (!user) throw new Error('Nguoi dung khong ton tai!');
@@ -114,6 +370,78 @@ const createBooking = async (data) => {
     });
 };
 
+// FE-03.3 Dat dinh ky
+const createRecurringBooking = async (data) => {
+    const { user_id, username, court_id, start_date, end_date, weekdays, start_time, end_time } = data;
+    const normalizedWeekdays = normalizeRecurringWeekdays(weekdays);
+    const recurringDates = generateRecurringDates(start_date, end_date, normalizedWeekdays);
+    validateBookingWindow({ court_id, booking_date: recurringDates[0], start_time, end_time });
+    const duration = parseTimeToHours(end_time) - parseTimeToHours(start_time);
+
+    return await db.transaction(async (trx) => {
+        const court = await trx('Courts').where({ id: court_id, status: 'Active' }).first();
+        if (!court) throw new Error('San khong kha dung hoac dang bao tri!');
+
+        const goldenRules = await trx('CourtPrices').where({ court_id });
+        const conflicts = [];
+        const bookingPayloads = [];
+
+        for (const bookingDate of recurringDates) {
+            const overlapCheck = await checkTimeOverlap(trx, court_id, bookingDate, start_time, end_time);
+            if (overlapCheck.isOverlap) {
+                conflicts.push(buildConflictDetails({
+                    booking_date: bookingDate,
+                    start_time,
+                    end_time,
+                    overlapCheck
+                }));
+                continue;
+            }
+
+            const totalPrice = calculatePriceForTimeRange(court.price_per_hour, goldenRules, start_time, end_time);
+
+            bookingPayloads.push({
+                user_id,
+                court_id,
+                booking_date: bookingDate,
+                start_time,
+                end_time,
+                total_price: totalPrice,
+                status: 'Fully Paid'
+            });
+        }
+
+        if (conflicts.length > 0) {
+            const error = new Error('Khong the dat lich dinh ky vi co ngay bi trung lich hoac dang bao tri!');
+            error.conflicts = conflicts;
+            throw error;
+        }
+
+        const totalAmount = bookingPayloads.reduce((sum, item) => sum + Number(item.total_price || 0), 0);
+        const user = await trx('Users').where({ id: user_id }).first();
+
+        if (!user) {
+            throw new Error('Nguoi dung khong ton tai!');
+        }
+
+        if (Number(user.wallet_balance) < totalAmount) {
+            const missingAmount = totalAmount - Number(user.wallet_balance);
+            throw new Error(`So du vi khong du de dat lich dinh ky. Vui long nap them ${missingAmount} VND.`);
+        }
+
+        await trx('Users').where({ id: user_id }).decrement('wallet_balance', totalAmount);
+        const createdBookings = await trx('Bookings').insert(bookingPayloads).returning('*');
+
+        return {
+            court_id,
+            total_bookings: createdBookings.length,
+            total_amount: Number(totalAmount.toFixed(2)),
+            booking_dates: createdBookings.map((item) => item.booking_date),
+            bookings: createdBookings
+        };
+    });
+};
+
 // 2. Lay lich su dat san
 const getUserBookings = async (userId) => {
     return await db('Bookings')
@@ -124,35 +452,32 @@ const getUserBookings = async (userId) => {
 };
 
 // 3. Huy lich dat san
+const previewCancellationPolicy = async (bookingId, userId) => {
+    const booking = await db('Bookings').where({ id: bookingId, user_id: userId }).first();
+
+    if (!booking) throw new Error('Khong tim thay don dat san hoac ban khong co quyen huy!');
+    if (booking.status === 'Cancelled') throw new Error('Don nay da duoc huy tu truoc roi!');
+
+    const refundInfo = getCancellationRefundInfo(booking);
+
+    return {
+        booking_id: booking.id,
+        booking_date: booking.booking_date,
+        start_time: booking.start_time,
+        end_time: booking.end_time,
+        total_price: Number(booking.total_price || 0),
+        ...refundInfo
+    };
+};
+
 const cancelBooking = async (bookingId, userId) => {
     return await db.transaction(async (trx) => {
         const booking = await trx('Bookings').where({ id: bookingId, user_id: userId }).first();
 
         if (!booking) throw new Error('Khong tim thay don dat san hoac ban khong co quyen huy!');
         if (booking.status === 'Cancelled') throw new Error('Don nay da duoc huy tu truoc roi!');
-
-        const dateObj = new Date(booking.booking_date);
-        const dateString = dateObj.toISOString().split('T')[0];
-        const bookingDateTime = new Date(`${dateString}T${booking.start_time}`);
-        const now = new Date();
-
-        const hoursUntilBooking = (bookingDateTime - now) / (1000 * 60 * 60);
-
-        if (hoursUntilBooking < 0) {
-            throw new Error('San da den gio hoac da qua gio choi, khong the huy!');
-        }
-
-        let refundRatio = 0;
-        if (hoursUntilBooking >= 72) {
-            refundRatio = 0.75;
-        } else if (hoursUntilBooking >= 24) {
-            refundRatio = 0.5;
-        } else {
-            refundRatio = 0.25;
-        }
-
-        const paidAmount = Number(booking.total_price || 0);
-        const refundAmount = paidAmount * refundRatio;
+        const refundInfo = getCancellationRefundInfo(booking);
+        const refundAmount = refundInfo.refundAmount;
 
         await trx('Bookings').where({ id: bookingId }).update({
             status: 'Cancelled',
@@ -176,9 +501,11 @@ const cancelBooking = async (bookingId, userId) => {
         }
 
         return {
-            message: `Da hoan ${refundRatio * 100}% (${refundAmount.toLocaleString('vi-VN')} VND) vao vi.`,
+            message: `Da hoan ${refundInfo.refundRatioLabel} (${refundAmount.toLocaleString('vi-VN')} VND) vao vi.`,
             refundAmount,
-            refundRatio: `${refundRatio * 100}%`
+            refundRatio: refundInfo.refundRatioLabel,
+            hoursUntilBooking: refundInfo.hoursUntilBooking,
+            policyMatched: refundInfo.policyMatched
         };
     });
 };
@@ -189,7 +516,20 @@ const checkAvailability = async (date, time) => {
         .where({ booking_date: date, start_time: time })
         .whereNot('status', 'Cancelled')
         .pluck('court_id');
-    return await db('Courts').where({ status: 'Active' }).whereNotIn('id', booked);
+
+    const maintenanceCourtIds = await db('CourtMaintenances')
+        .where({ maintenance_date: date })
+        .whereIn('status', ['Scheduled', 'In Progress'])
+        .andWhere(function() {
+            this.where('start_time', '<=', time)
+                .andWhere('end_time', '>', time);
+        })
+        .pluck('court_id');
+
+    return await db('Courts')
+        .where({ status: 'Active' })
+        .whereNotIn('id', booked)
+        .whereNotIn('id', maintenanceCourtIds);
 };
 
 // 5. Cap nhat trang thai tu dong
@@ -201,9 +541,9 @@ const updateCompletedBookings = async () => {
 
         const updatedRows = await db('Bookings')
             .where('status', 'Fully Paid')
-            .andWhere(function () {
+            .andWhere(function() {
                 this.where('booking_date', '<', currentDate)
-                    .orWhere(function () {
+                    .orWhere(function() {
                         this.where('booking_date', '=', currentDate)
                             .andWhere('end_time', '<', currentTime);
                     });
@@ -248,7 +588,7 @@ const payAtCounter = async (bookingId, cashReceived) => {
     const finalBooking = await db('Bookings').where({ id: bookingId }).first();
 
     return {
-        message: 'Thanh toan thanh cong! Da chot don.',
+        message: 'Thanh toán đã thành công! Đã Chốt đơn.',
         totalAmountToPay,
         cashReceived: Number(cashReceived),
         changeAmount,
@@ -264,6 +604,7 @@ const getShiftRevenue = async (startTime, endTime) => {
     let totalCash = 0;
     let totalTransfer = 0;
     let totalRefund = 0;
+
     transactions.forEach((tx) => {
         const amount = Number(tx.transfer_amount || 0);
         const gatewayId = tx.gateway_transaction_id || '';
@@ -275,6 +616,7 @@ const getShiftRevenue = async (startTime, endTime) => {
             totalTransfer += amount;
         }
     });
+
     const netRevenue = totalCash + totalTransfer - totalRefund;
     return {
         shift_duration: `${startTime} den ${endTime}`,
@@ -307,6 +649,23 @@ const parseTimeToHours = (timeStr) => {
     return hours + (minutes / 60) + (seconds / 3600);
 };
 
+const resolveBookingIdFromQr = ({ booking_id, qr_code }) => {
+    if (booking_id) {
+        return Number(booking_id);
+    }
+
+    if (!qr_code || typeof qr_code !== 'string') {
+        throw new Error('QR code khong hop le!');
+    }
+
+    const matchedId = qr_code.match(/\d+/);
+    if (!matchedId) {
+        throw new Error('Khong the doc Booking ID tu QR code!');
+    }
+
+    return Number(matchedId[0]);
+};
+
 // FE-03.1 Live Calendar
 const getLiveCalendar = async ({ start_date, court_id }) => {
     const startDate = new Date(`${start_date}T00:00:00.000Z`);
@@ -335,7 +694,7 @@ const getLiveCalendar = async ({ start_date, court_id }) => {
 
     const courts = await courtsQuery;
     if (courts.length === 0) {
-        throw new Error('Khong tim thay san phu hop de hien thi live calendar!');
+        throw new Error('Không tìm thấy sân phù hợp để hiển thị live calendar!');
     }
 
     let bookingsQuery = db('Bookings')
@@ -414,10 +773,153 @@ const getLiveCalendar = async ({ start_date, court_id }) => {
         calendar: calendarByCourt
     };
 };
+// Hàm thanh toán 
+const checkInBooking = async ({ booking_id, qr_code }) => {
+    const bookingId = resolveBookingIdFromQr({ booking_id, qr_code });
 
+    if (!Number.isInteger(bookingId) || bookingId <= 0) {
+        throw new Error('Booking ID khong hop le!');
+    }
+
+    const booking = await db('Bookings')
+        .join('Courts', 'Bookings.court_id', 'Courts.id')
+        .select(
+            'Bookings.*',
+            'Courts.name as court_name',
+            'Courts.type as court_type'
+        )
+        .where('Bookings.id', bookingId)
+        .first();
+
+    if (!booking) {
+        throw new Error('Không tìm thấy thông tin đặt sân để check-in!');
+    }
+
+    if (booking.status === 'Cancelled') {
+        throw new Error('Booking này đã bị hủy, không thể check-in!');
+    }
+
+    if (booking.status === 'Active') {
+        throw new Error('Booking này đã được check in!');
+    }
+
+    if (!['Pending', 'Partially Paid', 'Fully Paid'].includes(booking.status)) {
+        throw new Error(`Khong the check-in voi trang thai hien tai: ${booking.status}`);
+    }
+
+    const [updatedBooking] = await db('Bookings')
+        .where({ id: bookingId })
+        .update({
+            status: 'Active',
+            updated_at: db.fn.now()
+        })
+        .returning('*');
+
+    return {
+        booking_id: updatedBooking.id,
+        court_id: updatedBooking.court_id,
+        court_name: booking.court_name,
+        court_type: booking.court_type,
+        booking_date: updatedBooking.booking_date,
+        start_time: updatedBooking.start_time,
+        end_time: updatedBooking.end_time,
+        booking_status: updatedBooking.status,
+        court_state: 'In-use'
+    };
+};
+const extendBooking = async (bookingId, new_end_time) => {
+    return await db.transaction(async (trx) => {
+        const booking = await trx('Bookings').where({ id: bookingId }).first();
+
+        if (!booking) {
+            throw new Error('Khong tim thay suat dat nay!');
+        }
+
+        if (!['Fully Paid', 'Partially Paid', 'Active'].includes(booking.status)) {
+            throw new Error('Chi co the gia han cho suat dat da thanh toan hoac dang choi!');
+        }
+
+        validateBookingWindow({
+            court_id: booking.court_id,
+            booking_date: booking.booking_date,
+            start_time: booking.start_time,
+            end_time: new_end_time
+        });
+
+        if (parseTimeToHours(new_end_time) <= parseTimeToHours(booking.end_time)) {
+            throw new Error('Gio gia han phai lon hon gio ket thuc hien tai!');
+        }
+
+        const overlapCheck = await checkTimeOverlap(
+            trx,
+            booking.court_id,
+            booking.booking_date,
+            booking.end_time,
+            new_end_time
+        );
+
+        if (overlapCheck.isOverlap) {
+            throw new Error(overlapCheck.message);
+        }
+
+        const court = await trx('Courts').where({ id: booking.court_id }).first();
+        const goldenRules = await trx('CourtPrices').where({ court_id: booking.court_id });
+        const extraCost = calculatePriceForTimeRange(
+            court.price_per_hour,
+            goldenRules,
+            booking.end_time,
+            new_end_time
+        );
+        const user = await trx('Users').where({ id: booking.user_id }).first();
+
+        if (!user) {
+            throw new Error('Nguoi dung khong ton tai!');
+        }
+
+        if (Number(user.wallet_balance) < extraCost) {
+            throw new Error(`Vi khong du tien gia han! Can thu them ${extraCost} VND.`);
+        }
+
+        await trx('Users').where({ id: booking.user_id }).decrement('wallet_balance', extraCost);
+
+        const [updatedBooking] = await trx('Bookings')
+            .where({ id: bookingId })
+            .update({
+                end_time: new_end_time,
+                total_price: Number(booking.total_price || 0) + extraCost,
+                updated_at: trx.fn.now()
+            })
+            .returning('*');
+
+        const [supplementalInvoice] = await trx('transactions')
+            .insert({
+                user_id: booking.user_id,
+                transfer_amount: extraCost,
+                status: 'success',
+                gateway_transaction_id: `EXTEND_${bookingId}_${Date.now()}`
+            })
+            .returning('*');
+
+        return {
+            updatedBooking,
+            extraCost,
+            supplementalInvoice: {
+                invoice_code: supplementalInvoice.gateway_transaction_id,
+                amount: Number(extraCost),
+                booking_id: booking.id,
+                previous_end_time: booking.end_time,
+                new_end_time
+            },
+            message: `Gia han thanh cong! Da tao hoa don bo sung ${extraCost} VND.`
+        };
+    });
+};
 module.exports = {
     createBooking,
+    createRecurringBooking,
+    checkBookingOverlap,
     getUserBookings,
+    previewCancellationPolicy,
     cancelBooking,
     checkAvailability,
     updateCompletedBookings,
@@ -425,5 +927,7 @@ module.exports = {
     payAtCounter,
     getShiftRevenue,
     getFailedTransactions,
-    getLiveCalendar
+    getLiveCalendar,
+    checkInBooking,
+    extendBooking
 };
