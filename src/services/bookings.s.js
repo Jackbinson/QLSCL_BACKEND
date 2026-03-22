@@ -259,6 +259,79 @@ const getCancellationRefundInfo = (booking) => {
     };
 };
 
+const getBookingHistoryStatus = (booking) => {
+    if (booking.status === 'Cancelled') {
+        return {
+            code: 'cancelled',
+            label: 'Da huy'
+        };
+    }
+
+    const bookingStartDateTime = getBookingStartDateTime(booking);
+    const now = new Date();
+
+    if (bookingStartDateTime > now) {
+        return {
+            code: 'upcoming',
+            label: 'Sap toi'
+        };
+    }
+
+    return {
+        code: 'completed',
+        label: 'Da choi'
+    };
+};
+
+const createWaitlistNotification = async (trx, waitlistItem, booking) => {
+    const title = 'Khung gio dang cho da trong';
+    const message = `San ${booking.court_id} ngay ${booking.booking_date} tu ${booking.start_time} den ${booking.end_time} vua co cho trong do co nguoi huy lich.`;
+
+    await trx('Notifications').insert({
+        user_id: waitlistItem.user_id,
+        type: 'WAITLIST_AVAILABLE',
+        title,
+        message,
+        meta: JSON.stringify({
+            waitlist_id: waitlistItem.id,
+            court_id: booking.court_id,
+            booking_date: booking.booking_date,
+            start_time: booking.start_time,
+            end_time: booking.end_time
+        })
+    });
+};
+
+const notifyWaitlistUsers = async (trx, booking) => {
+    const waitlistItems = await trx('BookingWaitlists')
+        .where({
+            court_id: booking.court_id,
+            booking_date: booking.booking_date,
+            status: 'Waiting'
+        })
+        .andWhere(function() {
+            this.where('start_time', '<', booking.end_time)
+                .andWhere('end_time', '>', booking.start_time);
+        })
+        .orderBy('created_at', 'asc');
+
+    for (const waitlistItem of waitlistItems) {
+        await createWaitlistNotification(trx, waitlistItem, booking);
+    }
+
+    if (waitlistItems.length > 0) {
+        await trx('BookingWaitlists')
+            .whereIn('id', waitlistItems.map((item) => item.id))
+            .update({
+                status: 'Notified',
+                notified_at: trx.fn.now(),
+                updated_at: trx.fn.now()
+            });
+    }
+
+    return waitlistItems.length;
+};
+
 const checkBookingOverlap = async (data) => {
     const { court_id, booking_date, start_time, end_time, start_date, end_date, weekdays } = data;
 
@@ -444,11 +517,217 @@ const createRecurringBooking = async (data) => {
 
 // 2. Lay lich su dat san
 const getUserBookings = async (userId) => {
-    return await db('Bookings')
+    const bookings = await db('Bookings')
         .join('Courts', 'Bookings.court_id', 'Courts.id')
         .where('Bookings.user_id', userId)
         .select('Bookings.*', 'Courts.name as court_name')
         .orderBy('booking_date', 'desc');
+
+    return bookings.map((booking) => {
+        const historyStatus = getBookingHistoryStatus(booking);
+
+        return {
+            ...booking,
+            display_status: historyStatus.code,
+            display_status_label: historyStatus.label
+        };
+    });
+};
+
+const createWaitlistRegistration = async ({ user_id, court_id, booking_date, start_time, end_time }) => {
+    validateBookingWindow({ court_id, booking_date, start_time, end_time });
+
+    return await db.transaction(async (trx) => {
+        const court = await trx('Courts').where({ id: court_id, status: 'Active' }).first();
+        if (!court) {
+            throw new Error('San khong kha dung hoac dang bao tri!');
+        }
+
+        const overlapCheck = await checkTimeOverlap(trx, court_id, booking_date, start_time, end_time);
+        if (!overlapCheck.isOverlap) {
+            throw new Error('Khung gio nay van con trong. Ban co the dat san truc tiep, khong can vao danh sach cho!');
+        }
+
+        const existingWaitlist = await trx('BookingWaitlists')
+            .where({
+                user_id,
+                court_id,
+                booking_date
+            })
+            .whereIn('status', ['Waiting', 'Notified'])
+            .andWhere(function() {
+                this.where('start_time', '<', end_time)
+                    .andWhere('end_time', '>', start_time);
+            })
+            .first();
+
+        if (existingWaitlist) {
+            throw new Error('Ban da co mot dang ky cho cho khung gio nay roi!');
+        }
+
+        const [waitlistItem] = await trx('BookingWaitlists').insert({
+            user_id,
+            court_id,
+            booking_date,
+            start_time,
+            end_time,
+            status: 'Waiting'
+        }).returning('*');
+
+        return waitlistItem;
+    });
+};
+
+const getUserWaitlist = async (userId) => {
+    return await db('BookingWaitlists')
+        .join('Courts', 'BookingWaitlists.court_id', 'Courts.id')
+        .where('BookingWaitlists.user_id', userId)
+        .select(
+            'BookingWaitlists.*',
+            'Courts.name as court_name',
+            'Courts.type as court_type'
+        )
+        .orderBy([{ column: 'BookingWaitlists.booking_date', order: 'desc' }, { column: 'BookingWaitlists.start_time', order: 'desc' }]);
+};
+
+const getUserNotifications = async (userId) => {
+    return await db('Notifications')
+        .where({ user_id: userId })
+        .orderBy('created_at', 'desc');
+};
+
+const rescheduleBooking = async (bookingId, userId, data) => {
+    const { booking_date, start_time, end_time, court_id } = data;
+
+    return await db.transaction(async (trx) => {
+        const booking = await trx('Bookings').where({ id: bookingId, user_id: userId }).first();
+
+        if (!booking) {
+            throw new Error('Khong tim thay don dat san hoac ban khong co quyen doi lich!');
+        }
+
+        if (booking.status === 'Cancelled') {
+            throw new Error('Don nay da bi huy, khong the doi lich!');
+        }
+
+        if (booking.status === 'Active') {
+            throw new Error('Suat dat dang choi, khong the doi lich!');
+        }
+
+        const currentStartDateTime = getBookingStartDateTime(booking);
+        if (currentStartDateTime <= new Date()) {
+            throw new Error('Suat dat da den gio hoac qua gio, khong the doi lich!');
+        }
+
+        const targetCourtId = court_id || booking.court_id;
+        const targetBookingDate = booking_date || booking.booking_date;
+        const targetStartTime = start_time || booking.start_time;
+        const targetEndTime = end_time || booking.end_time;
+
+        validateBookingWindow({
+            court_id: targetCourtId,
+            booking_date: targetBookingDate,
+            start_time: targetStartTime,
+            end_time: targetEndTime
+        });
+
+        const sameSlot = Number(targetCourtId) === Number(booking.court_id)
+            && targetBookingDate === booking.booking_date
+            && targetStartTime === booking.start_time
+            && targetEndTime === booking.end_time;
+
+        if (sameSlot) {
+            throw new Error('Khung gio moi giong voi lich hien tai, khong can doi lich!');
+        }
+
+        const court = await trx('Courts').where({ id: targetCourtId, status: 'Active' }).first();
+        if (!court) {
+            throw new Error('San moi khong kha dung hoac dang bao tri!');
+        }
+
+        const overlapCheck = await checkTimeOverlap(
+            trx,
+            targetCourtId,
+            targetBookingDate,
+            targetStartTime,
+            targetEndTime
+        );
+
+        if (overlapCheck.isOverlap) {
+            throw new Error(overlapCheck.message);
+        }
+
+        const goldenRules = await trx('CourtPrices').where({ court_id: targetCourtId });
+        const recalculatedPrice = calculatePriceForTimeRange(
+            court.price_per_hour,
+            goldenRules,
+            targetStartTime,
+            targetEndTime
+        );
+
+        const currentPaidAmount = Number(booking.total_price || 0);
+        const additionalCharge = Number(Math.max(recalculatedPrice - currentPaidAmount, 0).toFixed(2));
+
+        if (additionalCharge > 0) {
+            const user = await trx('Users').where({ id: userId }).first();
+
+            if (!user) {
+                throw new Error('Nguoi dung khong ton tai!');
+            }
+
+            if (Number(user.wallet_balance) < additionalCharge) {
+                throw new Error(`Vi khong du tien doi lich! Can thu them ${additionalCharge} VND.`);
+            }
+
+            await trx('Users').where({ id: userId }).decrement('wallet_balance', additionalCharge);
+            await trx('transactions').insert({
+                user_id: userId,
+                transfer_amount: additionalCharge,
+                status: 'success',
+                gateway_transaction_id: `RESCHEDULE_${bookingId}_${Date.now()}`,
+                booking_id: bookingId
+            });
+        }
+
+        const [updatedBooking] = await trx('Bookings')
+            .where({ id: bookingId })
+            .update({
+                court_id: targetCourtId,
+                booking_date: targetBookingDate,
+                start_time: targetStartTime,
+                end_time: targetEndTime,
+                total_price: additionalCharge > 0 ? recalculatedPrice : currentPaidAmount,
+                updated_at: trx.fn.now()
+            })
+            .returning('*');
+
+        const releasedSlot = {
+            court_id: booking.court_id,
+            booking_date: booking.booking_date,
+            start_time: booking.start_time,
+            end_time: booking.end_time
+        };
+
+        const notifiedWaitlistCount = await notifyWaitlistUsers(trx, releasedSlot);
+
+        return {
+            booking_id: updatedBooking.id,
+            old_schedule: releasedSlot,
+            new_schedule: {
+                court_id: updatedBooking.court_id,
+                booking_date: updatedBooking.booking_date,
+                start_time: updatedBooking.start_time,
+                end_time: updatedBooking.end_time
+            },
+            old_total_price: currentPaidAmount,
+            recalculated_price: recalculatedPrice,
+            additional_charge: additionalCharge,
+            notifiedWaitlistCount,
+            message: additionalCharge > 0
+                ? `Doi lich thanh cong! Da thu them ${additionalCharge} VND do khung gio moi co gia cao hon.`
+                : 'Doi lich thanh cong!'
+        };
+    });
 };
 
 // 3. Huy lich dat san
@@ -500,12 +779,15 @@ const cancelBooking = async (bookingId, userId) => {
             });
         }
 
+        const notifiedWaitlistCount = await notifyWaitlistUsers(trx, booking);
+
         return {
             message: `Da hoan ${refundInfo.refundRatioLabel} (${refundAmount.toLocaleString('vi-VN')} VND) vao vi.`,
             refundAmount,
             refundRatio: refundInfo.refundRatioLabel,
             hoursUntilBooking: refundInfo.hoursUntilBooking,
-            policyMatched: refundInfo.policyMatched
+            policyMatched: refundInfo.policyMatched,
+            notifiedWaitlistCount
         };
     });
 };
@@ -560,15 +842,15 @@ const updateCompletedBookings = async () => {
 const payAtCounter = async (bookingId, cashReceived) => {
     const booking = await db('Bookings').where({ id: bookingId }).first();
 
-    if (!booking) throw new Error('Hien tai chung toi khong tim thay thong tin don dat san!');
-    if (booking.status === 'Fully Paid') throw new Error('Don nay da duoc thanh toan tu truoc!');
+    if (!booking) throw new Error('Hiện tại chúng tôi không thấy thông tin đặt sân để tiếp thanh toán!');
+    if (booking.status === 'Fully Paid') throw new Error('Đơn này đã được thanh toán gần trước đây!');
 
     const basePrice = Number(booking.total_price || 0);
     const penaltyFee = Number(booking.penalty_fee || 0);
     const totalAmountToPay = basePrice + penaltyFee;
 
     if (Number(cashReceived) < totalAmountToPay) {
-        throw new Error(`Khach dua thieu tien! Can thanh toan: ${totalAmountToPay.toLocaleString('vi-VN')} VND`);
+        throw new Error(`Khách đưa thiếu tiền! Cần thanh toán: ${totalAmountToPay.toLocaleString('vi-VN')} VND`);
     }
 
     await db.transaction(async (trx) => {
@@ -918,7 +1200,11 @@ module.exports = {
     createBooking,
     createRecurringBooking,
     checkBookingOverlap,
+    createWaitlistRegistration,
     getUserBookings,
+    getUserWaitlist,
+    getUserNotifications,
+    rescheduleBooking,
     previewCancellationPolicy,
     cancelBooking,
     checkAvailability,

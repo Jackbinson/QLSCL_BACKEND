@@ -1,4 +1,5 @@
 const adminService = require('../services/admin.s');
+const auditLogService = require('../services/auditLogs.s');
 const bookingService = require('../services/bookings.s');
 const logger = require('../utils/logger');
 
@@ -57,6 +58,86 @@ const getDashboardStats = async (req, res) => {
     }
 };
 
+const getAccountsForAcl = async (req, res) => {
+    try {
+        const accounts = await adminService.getAccountsForAcl();
+        return res.status(200).json({
+            success: true,
+            data: accounts
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+const getUserAcl = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const acl = await adminService.getUserAcl(userId);
+        return res.status(200).json({
+            success: true,
+            data: acl
+        });
+    } catch (error) {
+        return res.status(404).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+const updateUserAcl = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { permissions } = req.body;
+
+        if (!Array.isArray(permissions)) {
+            return res.status(400).json({
+                success: false,
+                message: 'permissions phai la mot mang quyen!'
+            });
+        }
+
+        const result = await adminService.updateUserAcl(userId, permissions);
+        await auditLogService.createAuditLog(req, {
+            action: 'UPDATE_USER_ACL',
+            content: `Cap nhat quyen cho user ${userId}: ${permissions.join(', ')}`
+        });
+        return res.status(200).json({
+            success: true,
+            message: 'Cap nhat bang phan quyen thanh cong!',
+            data: result
+        });
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+const getSystemLogs = async (req, res) => {
+    try {
+        const logs = await auditLogService.getSystemLogs();
+        return res.status(200).json({
+            success: true,
+            data: logs
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
 module.exports = {
-    getDashboardStats
+    getDashboardStats,
+    getAccountsForAcl,
+    getUserAcl,
+    updateUserAcl,
+    getSystemLogs
 };

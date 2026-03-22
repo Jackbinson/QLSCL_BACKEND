@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
 const courtService = require('../services/courts.s');
+const auditLogService = require('../services/auditLogs.s');
 const { start } = require('repl');
 
 // 1. Lay danh sach san
@@ -58,6 +59,10 @@ const updateCourtImage = async (req, res) => {
         const newImageUrl = `/uploads/courts/${fileName}`;
 
         await courtService.updateImageUrl(courtId, newImageUrl);
+        await auditLogService.createAuditLog(req, {
+            action: 'UPDATE_COURT_IMAGE',
+            content: `Cap nhat anh cho san ${courtId}`
+        });
 
         if (currentCourt.image_url) {
             const oldFilePath = path.join(__dirname, '../../public', currentCourt.image_url);
@@ -85,6 +90,10 @@ const updateCourtImage = async (req, res) => {
 const updateCourtType = async (req, res) => {
     try {
         const updatedCourt = await courtService.updateCourtType(req.params.id, req.body.type);
+        await auditLogService.createAuditLog(req, {
+            action: 'UPDATE_COURT_TYPE',
+            content: `Cap nhat loai san ${req.params.id} thanh ${req.body.type}`
+        });
 
         res.status(200).json({
             success: true,

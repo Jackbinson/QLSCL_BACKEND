@@ -1,4 +1,5 @@
 const bookingService = require('../services/bookings.s');
+const auditLogService = require('../services/auditLogs.s');
 const logger = require('../utils/logger');
 
 // Kiem tra san thuc te
@@ -12,6 +13,10 @@ const checkoutBooking = async (req, res) => {
         }
 
         const result = await bookingService.checkoutBooking(id, actual_end_time);
+        await auditLogService.createAuditLog(req, {
+            action: 'UPDATE_BOOKING_CHECKOUT',
+            content: `Cap nhat gio tra san thuc te cho booking ${id} thanh ${actual_end_time}`
+        });
         return res.status(200).json({ success: true, data: result });
     } catch (error) {
         return res.status(500).json({ success: false, message: error.message });
@@ -225,6 +230,11 @@ const checkInBooking = async (req, res) => {
             qr_code
         });
 
+        await auditLogService.createAuditLog(req, {
+            action: 'UPDATE_BOOKING_CHECKIN',
+            content: `Check-in QR cho booking ${result.booking_id}`
+        });
+
         return res.status(200).json({
             success: true,
             message: 'Check-in QR thanh cong!',
@@ -239,6 +249,111 @@ const checkInBooking = async (req, res) => {
 };
 
 // Huy dat san
+const rescheduleBooking = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { user_id } = req.user;
+        const { booking_date, start_time, end_time, court_id } = req.body;
+
+        if (!booking_date || !start_time || !end_time) {
+            return res.status(400).json({
+                success: false,
+                message: 'Vui long cung cap booking_date, start_time va end_time moi!'
+            });
+        }
+
+        const result = await bookingService.rescheduleBooking(id, user_id, {
+            booking_date,
+            start_time,
+            end_time,
+            court_id
+        });
+
+        await auditLogService.createAuditLog(req, {
+            action: 'UPDATE_BOOKING_RESCHEDULE',
+            content: `Doi lich booking ${id} sang ${result.new_schedule.booking_date} ${result.new_schedule.start_time}-${result.new_schedule.end_time}`
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: result.message,
+            data: result
+        });
+    } catch (error) {
+        return res.status(409).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+const createWaitlistRegistration = async (req, res) => {
+    try {
+        const { user_id } = req.user;
+        const { court_id, booking_date, start_time, end_time } = req.body;
+
+        if (!court_id || !booking_date || !start_time || !end_time) {
+            return res.status(400).json({
+                success: false,
+                message: 'Vui long cung cap day du court_id, booking_date, start_time va end_time!'
+            });
+        }
+
+        const result = await bookingService.createWaitlistRegistration({
+            user_id,
+            court_id,
+            booking_date,
+            start_time,
+            end_time
+        });
+
+        return res.status(201).json({
+            success: true,
+            message: 'Dang ky cho thanh cong!',
+            data: result
+        });
+    } catch (error) {
+        return res.status(409).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+const getUserWaitlist = async (req, res) => {
+    try {
+        const { user_id } = req.user;
+        const result = await bookingService.getUserWaitlist(user_id);
+
+        return res.status(200).json({
+            success: true,
+            data: result
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+const getUserNotifications = async (req, res) => {
+    try {
+        const { user_id } = req.user;
+        const result = await bookingService.getUserNotifications(user_id);
+
+        return res.status(200).json({
+            success: true,
+            data: result
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
 const previewCancellationPolicy = async (req, res) => {
     try {
         const { booking_id } = req.params;
@@ -263,6 +378,10 @@ const cancelBooking = async (req, res) => {
         const { booking_id } = req.params;
         const { user_id, username } = req.user;
         const result = await bookingService.cancelBooking(booking_id, user_id);
+        await auditLogService.createAuditLog(req, {
+            action: 'DELETE_BOOKING',
+            content: `Huy booking ${booking_id}`
+        });
 
         logger.info({
             message: 'Hanh dong huy san duoc thuc hien',
@@ -368,6 +487,10 @@ const extendBooking = async (req, res) => {
         }
 
         const result = await bookingService.extendBooking(id, new_end_time);
+        await auditLogService.createAuditLog(req, {
+            action: 'UPDATE_BOOKING_EXTEND',
+            content: `Gia han booking ${id} den ${new_end_time}`
+        });
         return res.status(200).json({
             success: true,
             message: result.message,
@@ -384,6 +507,10 @@ module.exports = {
     createBooking,
     createRecurringBooking,
     getUserBookings,
+    rescheduleBooking,
+    createWaitlistRegistration,
+    getUserWaitlist,
+    getUserNotifications,
     previewCancellationPolicy,
     cancelBooking,
     checkAvailability,

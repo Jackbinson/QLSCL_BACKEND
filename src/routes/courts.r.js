@@ -1,7 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const courtController = require('../controllers/courts.c');
-const { verifyToken, authorizeRoles } = require('../middlewares/auth.m');
+const { verifyToken, authorizeRoles, authorizePermission } = require('../middlewares/auth.m');
 const courtPriceController = require('../controllers/courtPrices.c');
 const maintenanceController = require('../controllers/courtMaintenances.c');
 
@@ -25,12 +25,18 @@ router.patch('/:id/image', verifyToken, authorizeRoles(['Admin']), upload.single
 router.patch('/:id/type', verifyToken, authorizeRoles(['Admin']), courtController.updateCourtType);
 
 // FE-02.4: Gia theo khung gio
-router.post('/:id/prices', verifyToken, authorizeRoles(['Admin']), courtPriceController.addPriceRule);
+router.post('/:id/prices', verifyToken, authorizeRoles(['Admin', 'Staff']), authorizePermission('EDIT_PRICES'), courtPriceController.addPriceRule);
 router.get('/:id/prices', courtPriceController.getPriceRules);
 
 // FE-02.6: Lich bao tri
 router.post('/:id/maintenances', verifyToken, authorizeRoles(['Admin']), maintenanceController.addMaintenance);
 router.get('/:id/maintenances', maintenanceController.getMaintenances);
-// FE-02.7: Tim kiem nang cao 
+
+// FE-02.9: Lich su sua chua va thong ke chi phi
+router.patch('/maintenances/:maintenanceId/complete', verifyToken, authorizeRoles(['Admin', 'Staff']), maintenanceController.completeMaintenance);
+router.get('/maintenances/statistics', verifyToken, authorizeRoles(['Admin']), maintenanceController.getStatistics);
+
+// FE-02.7: Tim kiem nang cao
 router.get('/search', courtController.searchAvailableCourts);
+
 module.exports = router;
