@@ -239,6 +239,106 @@ const checkInBooking = async (req, res) => {
 };
 
 // Huy dat san
+const rescheduleBooking = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { user_id } = req.user;
+        const { booking_date, start_time, end_time, court_id } = req.body;
+
+        if (!booking_date || !start_time || !end_time) {
+            return res.status(400).json({
+                success: false,
+                message: 'Vui long cung cap booking_date, start_time va end_time moi!'
+            });
+        }
+
+        const result = await bookingService.rescheduleBooking(id, user_id, {
+            booking_date,
+            start_time,
+            end_time,
+            court_id
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: result.message,
+            data: result
+        });
+    } catch (error) {
+        return res.status(409).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+const createWaitlistRegistration = async (req, res) => {
+    try {
+        const { user_id } = req.user;
+        const { court_id, booking_date, start_time, end_time } = req.body;
+
+        if (!court_id || !booking_date || !start_time || !end_time) {
+            return res.status(400).json({
+                success: false,
+                message: 'Vui long cung cap day du court_id, booking_date, start_time va end_time!'
+            });
+        }
+
+        const result = await bookingService.createWaitlistRegistration({
+            user_id,
+            court_id,
+            booking_date,
+            start_time,
+            end_time
+        });
+
+        return res.status(201).json({
+            success: true,
+            message: 'Dang ky cho thanh cong!',
+            data: result
+        });
+    } catch (error) {
+        return res.status(409).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+const getUserWaitlist = async (req, res) => {
+    try {
+        const { user_id } = req.user;
+        const result = await bookingService.getUserWaitlist(user_id);
+
+        return res.status(200).json({
+            success: true,
+            data: result
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+const getUserNotifications = async (req, res) => {
+    try {
+        const { user_id } = req.user;
+        const result = await bookingService.getUserNotifications(user_id);
+
+        return res.status(200).json({
+            success: true,
+            data: result
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
 const previewCancellationPolicy = async (req, res) => {
     try {
         const { booking_id } = req.params;
@@ -384,6 +484,10 @@ module.exports = {
     createBooking,
     createRecurringBooking,
     getUserBookings,
+    rescheduleBooking,
+    createWaitlistRegistration,
+    getUserWaitlist,
+    getUserNotifications,
     previewCancellationPolicy,
     cancelBooking,
     checkAvailability,

@@ -9,7 +9,11 @@ router.get('/calendar/live', bookingController.getLiveCalendar);
 
 // Nhom API danh cho khach hang
 router.get('/mine', verifyToken, bookingController.getUserBookings);
+router.get('/waitlist/mine', verifyToken, bookingController.getUserWaitlist);
+router.get('/notifications/mine', verifyToken, bookingController.getUserNotifications);
 router.post('/overlap-check', verifyToken, bookingController.checkOverlap);
+router.post('/waitlist', verifyToken, bookingController.createWaitlistRegistration);
+router.patch('/:id/reschedule', verifyToken, bookingController.rescheduleBooking);
 router.post('/', verifyToken, bookingController.createBooking);
 router.post('/recurring', verifyToken, bookingController.createRecurringBooking);
 router.get('/:booking_id/cancel-policy', verifyToken, bookingController.previewCancellationPolicy);
